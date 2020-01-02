@@ -50,26 +50,24 @@ limit=$NUM_WORKFLOW
 for i in ` ls -ltr $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/ | tail -n$1 | rev | cut -d ' ' -f1 | rev`;
 do
 
-comp_levels=`grep -n LEVEL  /mnt/lustre/genomics/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/call-HaplotypeCaller/shard-*/execution/stderr | cut -d ' ' -f7-10 | uniq`
+	comp_levels=`grep -n LEVEL  /mnt/lustre/genomics/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/call-HaplotypeCaller/shard-*/execution/stderr | cut -d ' ' -f7-10 | uniq`
 
-gkl_params=` grep -n hmm-threads  /mnt/lustre/genomics/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/call-HaplotypeCaller/shard-*/execution/stderr | cut -d ' ' -f31-50| uniq`
+	gkl_params=` grep -n hmm-threads  /mnt/lustre/genomics/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/call-HaplotypeCaller/shard-*/execution/stderr | cut -d ' ' -f31-50| uniq`
 
-printf " $comp_levels|$i|$gkl_params|"
+	printf " $comp_levels|$i|$gkl_params|"
  
-# Add array for all phases and path
-wdl_steps=(call-GetBwaVersion call-CheckFinalVcfExtension call-SamToFastqAndBwaMemAndMba call-BaseRecalibrator call-ApplyBQSR
-call-HaplotypeCaller call-SortSampleBam call-MarkDuplicates call-CreateSequenceGroupingTSV call-ScatterIntervalList call-MergeVCFs call-GatherBqsrReports call-GatherBamFiles)
+	# Add array for all phases and path
+	wdl_steps=(call-GetBwaVersion call-CheckFinalVcfExtension call-SamToFastqAndBwaMemAndMba call-BaseRecalibrator call-ApplyBQSR call-HaplotypeCaller call-SortSampleBam call-MarkDuplicates call-CreateSequenceGroupingTSV call-ScatterIntervalList call-MergeVCFs call-GatherBqsrReports call-GatherBamFiles)
 	for stage in ${wdl_steps[*]}; do 
 
-
-	if [ -f  $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/execution/stderr ]; then
-		sum1=` tail -n2 $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/execution/stderr | grep  Elapsed | cut -d ' ' -f11 | awk '{ sum += $1} ; END { print sum }' `
-	else
-		sum1=` tail -n2 $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/shard-*/execution/stderr | grep  Elapsed | cut -d ' ' -f11 | awk '{ sum += $1; count+=1} ; END { print sum/count}' `
-	fi
+		if [ -f  $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/execution/stderr ]; then
+			sum1=` tail -n2 $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/execution/stderr | grep  Elapsed | cut -d ' ' -f11 | awk '{ sum += $1} ; END { print sum }' `
+		else
+			sum1=` tail -n2 $GENOMICS_PATH/cromwell/cromwell-slurm-exec/PairedEndSingleSampleWorkflow/$i/$stage/shard-*/execution/stderr | grep  Elapsed | cut -d ' ' -f11 | awk '{ sum += $1; count+=1} ; END { print sum/count}' `
+		fi
 		sum_all=`echo $sum1`
-	printf "$stage: $sum_all minutes|" 
+		printf "$stage: $sum_all minutes|" 
 	done
-printf "\n"
+	printf "\n"
 done
 

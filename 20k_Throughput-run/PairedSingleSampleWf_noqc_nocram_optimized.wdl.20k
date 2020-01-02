@@ -965,7 +965,7 @@ task HaplotypeCaller {
   # the interval because the assembly uses them.
   command <<<
       export GATK_LOCAL_JAR=${tool_path}/gatk-jar && \
-      ${tool_path}/gatk/gatk --java-options -Xmx${haplotypecaller_java_heap_memory_initial} \
+      ${tool_path}/gatk/gatk --java-options "-Dsamjdk.compression_level=${compression_level} -Xmx${haplotypecaller_java_heap_memory_initial}" \
       HaplotypeCaller \
       -R ${ref_fasta} \
       -I ${input_bam} \

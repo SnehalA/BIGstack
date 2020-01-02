@@ -103,16 +103,15 @@ run_threads(){
 run_NGKL(){
 	WDL=NGKL-PairedSingleSampleWf_noqc_nocram_optimized.wdl.20k
 	JSON=$BASEDIR/NGKL-PairedSingleSampleWf_optimized.inputs
-	#JSON=$BASEDIR/JSON/PairedSingleSampleWf_optimized.inputs
 	echo " Running with run_NGKL " 
 	run_20k
 }
 
-#run_compression
-#run_threads
-#run_pair_hmm
-#run_smith_waterman
-#run_NGKL
+run_compression
+run_threads
+run_pair_hmm
+run_smith_waterman
+run_NGKL
 
-bash ./GKL_step05_Output_20k_Throughput-run.sh $wf_count | sort > gkl_run_stats`date +"%F"`
+bash ./GKL_step05_Output_20k_Throughput-run.sh $wf_count | sort > gkl_run_status`date +"%F"`
 
