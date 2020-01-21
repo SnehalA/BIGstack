@@ -66,17 +66,16 @@ run_pair_hmm(){
 }
 
 run_smith_waterman(){
-	#Update based on
-	#https://github.com/broadinstitute/gatk/blob/master/src/main/java/org/broadinstitute/hellbender/utils/smithwaterman/SmithWatermanAligner.java
+        #Update based on
+        #https://github.com/broadinstitute/gatk/blob/master/src/main/java/org/broadinstitute/hellbender/utils/smithwaterman/SmithWatermanAligner.java
         array=(FASTEST_AVAILABLE AVX_ENABLED JAVA)
         for index in ${!array[*]}; do
                 echo " Running with run_pair_hmm ${array[$index]} "
-		sed -i "s#compression_level\":[0-9]#compression_level\":\"${array[$index]}\",#g" ${JSON}.20k.json
-                run_20k
+                sed -i "s#smith_waterman_implementation\":[A-Z_\",]*#smith_waterman_implementation\":\"${array[$index]}\",#g" ${JSON}.json
+                run_wgs
         done
-		sed -i "s#compression_level\":[0-9]#compression_level\":\"AVX_ENABLED\",#g" ${JSON}.20k.json
+                sed -i "s#smith_waterman_implementation\":[A-Z_\",]*#smith_waterman_implementation\":\"AVX_ENABLED\",#g" ${JSON}.json
 }
-
 
 run_compression(){
 	for j in {1..9}
