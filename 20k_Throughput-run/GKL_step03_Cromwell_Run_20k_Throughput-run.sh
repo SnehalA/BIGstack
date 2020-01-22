@@ -46,8 +46,8 @@ run_20k(){
 	        #curl -vXPOST http://$CROMWELL_HOST:8000/api/workflows/v1 -F workflowSource=@${WDL} -F workflowInputs=@${JSON}${i}.20k.json > 20k_submission_response.txt
 	        curl -vXPOST http://$CROMWELL_HOST:8000/api/workflows/v1 -F workflowSource=@${WDL} -F workflowInputs=@${JSON}.20k.json > 20k_submission_response.txt
 		cat 20k_submission_response.txt |  cut -d '"' -f4 >"20k_WF_ID-"$DATE_WITH_TIME""/20k_WF_ID_${i}.txt
-i		cp "20k_WF_ID-"$DATE_WITH_TIME""/20k_WF_ID_* 20k_WF_ID
-	        wf_count+=1
+		cp "20k_WF_ID-"$DATE_WITH_TIME""/20k_WF_ID_* 20k_WF_ID
+	        ((wf_count+=1))
 		echo $wf_count" "$1" " $2 "==>"`cat 20k_WF_ID-${DATE_WITH_TIME}/20k_WF_ID_${i}.txt` 
 		sleep 360
 	done
