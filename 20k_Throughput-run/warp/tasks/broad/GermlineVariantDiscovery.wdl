@@ -66,7 +66,7 @@ task HaplotypeCaller_GATK35_GVCF {
       --read_filter OverclippedRead
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
+    #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     preemptible: preemptible_tries
     memory: "10 GiB"
     cpu: "1"
@@ -128,7 +128,7 @@ task HaplotypeCaller_GATK4_VCF {
   >>>
 
   runtime {
-    docker: gatk_docker
+    #docker: gatk_docker
     preemptible: preemptible_tries
     memory: "6.5 GiB"
     cpu: "2"
@@ -157,13 +157,13 @@ task MergeVCFs {
   # Using MergeVcfs instead of GatherVcfs so we can create indices
   # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
   command {
-    java -Xms2000m -jar /usr/picard/picard.jar \
+    java -Xms2000m -jar ${tool_path}/picard.jar \
       MergeVcfs \
       INPUT=~{sep=' INPUT=' input_vcfs} \
       OUTPUT=~{output_vcf_name}
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.8"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.8"
     preemptible: preemptible_tries
     memory: "3 GiB"
     disks: "local-disk ~{disk_size} HDD"
@@ -201,7 +201,7 @@ task HardFilterVcf {
     File output_vcf_index = "~{output_vcf_name}.tbi"
   }
   runtime {
-    docker: gatk_docker
+    #docker: gatk_docker
     preemptible: preemptible_tries
     memory: "3 GiB"
     bootDiskSizeGb: 15
@@ -250,7 +250,7 @@ task CNNScoreVariants {
   }
 
   runtime {
-    docker: gatk_docker
+    #docker: gatk_docker
     preemptible: preemptible_tries
     memory: "15 GiB"
     cpu: "2"
@@ -313,6 +313,6 @@ task FilterVariantTranches {
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
     preemptible: preemptible_tries
-    docker: gatk_docker
+    #docker: gatk_docker
   }
 }

@@ -168,7 +168,7 @@ task Funcotate {
   >>>
 
   runtime {
-    docker: gatk_docker
+    #docker: gatk_docker
     memory: "~{machine_memory} GiB"
     bootDiskSizeGb: 15
     disks: "local-disk ~{disk_size} ~{disk_type}"

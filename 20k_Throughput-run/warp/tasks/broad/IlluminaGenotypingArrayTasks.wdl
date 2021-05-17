@@ -14,7 +14,7 @@ task Md5Sum {
   >>>
 
   runtime {
-    docker: "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
+    #docker: "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
     disks: "local-disk 10 HDD"
     memory: "3.5 GiB"
     preemptible: 3
@@ -42,7 +42,7 @@ task zCall {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/zcall:4.0.1-1572616568"
+    #docker: "us.gcr.io/broad-gotc-prod/zcall:4.0.1-1572616568"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -63,7 +63,7 @@ task BpmToNormalizationManifestCsv {
     Int preemptible_tries
   }
   command {
-  java -Xms7g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+  java -Xms7g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
     BpmToNormalizationManifestCsv \
     --INPUT ~{bead_pool_manifest_file} \
     --CLUSTER_FILE ~{cluster_file} \
@@ -71,7 +71,7 @@ task BpmToNormalizationManifestCsv {
   }
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk 10 HDD"
     memory: "7.5 GiB"
     cpu: 2
@@ -110,7 +110,7 @@ task GtcToVcf {
   }
 
   command {
-  java -Xms~{floor(memory - 1)}g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+  java -Xms~{floor(memory - 1)}g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
     GtcToVcf \
     --INPUT ~{input_gtc} \
     ~{"--GENDER_GTC " + gender_gtc} \
@@ -130,7 +130,7 @@ task GtcToVcf {
   }
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "~{memory} GiB"
     cpu: 2
@@ -162,7 +162,7 @@ task BafRegress {
     python /root/tools/bafRegress.py estimate --freqfile ~{maf_file} temp.final_report.txt > ~{output_results_filename}
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/bafregress:1.0"
+    #docker: "us.gcr.io/broad-gotc-prod/bafregress:1.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -186,7 +186,7 @@ task VcfToAdpc {
   }
 
   command {
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
              VcfToAdpc \
              --VCF ~{input_vcf} \
              ~{"--VCF " + contamination_controls_vcf} \
@@ -195,7 +195,7 @@ task VcfToAdpc {
              --OUTPUT ~{output_adpc_filename}
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -224,7 +224,7 @@ task VerifyIDIntensity {
     /usr/gitc/verifyIDintensity -m ~{num_markers} -n ~{num_samples} -i ~{input_adpc_file} -v -p > ~{output_filename}
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/verify-id-intensity:e6354872834fe4262354a6b27bfe85ecc1323677-1561566044"
+    #docker: "us.gcr.io/broad-gotc-prod/verify-id-intensity:e6354872834fe4262354a6b27bfe85ecc1323677-1561566044"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -263,13 +263,13 @@ task CreateVerifyIDIntensityContaminationMetricsFile {
       exit 1;
     fi
 
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
              CreateVerifyIDIntensityContaminationMetricsFile \
              --INPUT $TRUNCATED_INPUT_FILE \
              --OUTPUT ~{output_metrics_basefilename}
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -296,7 +296,7 @@ task CollectArraysVariantCallingMetrics {
   command <<<
     set -eo pipefail
 
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       CollectArraysVariantCallingMetrics \
       --INPUT ~{input_vcf_file} \
       --DBSNP ~{dbSNP_vcf_file} \
@@ -325,7 +325,7 @@ task CollectArraysVariantCallingMetrics {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -349,14 +349,14 @@ task VcfToIntervalList {
   }
 
   command {
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       VcfToIntervalList \
       --INPUT ~{vcf_file} \
       --OUTPUT ~{interval_list_filename}
   }
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -392,7 +392,7 @@ task CheckFingerprint {
 
   command <<<
     set -e
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       CheckFingerprint \
       --INPUT ~{input_vcf_file} \
       --OBSERVED_SAMPLE_ALIAS "~{observed_sample_alias}" \
@@ -410,7 +410,7 @@ task CheckFingerprint {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -459,7 +459,7 @@ task SelectVariants {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
+    #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -495,7 +495,7 @@ task SelectIndels {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
+    #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -542,7 +542,7 @@ task AutoCall {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/illumina-iaap-autocall:1.0.1-1572616845"
+    #docker: "us.gcr.io/broad-gotc-prod/illumina-iaap-autocall:1.0.1-1572616845"
     disks: "local-disk " + disk_size + " HDD"
     memory: "7 GiB"
     preemptible: preemptible_tries
@@ -569,7 +569,7 @@ task MergePedIntoVcf {
   }
 
   command {
-    java -Xms3g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms3g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       MergePedIntoVcf \
       --ORIGINAL_VCF ~{input_vcf} \
       --PED_FILE ~{ped_file} \
@@ -581,7 +581,7 @@ task MergePedIntoVcf {
   }
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     memory: "3.5 GiB"
     cpu: "1"
     disks: "local-disk " + disk_size + " HDD"
@@ -617,7 +617,7 @@ task SubsetArrayVCF {
   }
 
   runtime {
-    docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
+    #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
   }
@@ -644,7 +644,7 @@ task GenotypeConcordance {
   command <<<
     set -eo pipefail
 
-    java -Xms3g -Dpicard.useLegacyParser=false -jar /usr/picard/picard.jar \
+    java -Xms3g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       GenotypeConcordance \
       --CALL_VCF ~{call_vcf_file} \
       --CALL_SAMPLE ~{call_sample_name} \
@@ -680,7 +680,7 @@ task GenotypeConcordance {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
+    #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries
@@ -715,7 +715,7 @@ task ValidateVariants {
   >>>
 
   runtime {
-    docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
+    #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     preemptible: preemptible_tries

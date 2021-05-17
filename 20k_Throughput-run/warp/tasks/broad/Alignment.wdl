@@ -68,7 +68,7 @@ task SamToFastqAndBwaMemAndMba {
         FASTQ=/dev/stdout \
         INTERLEAVE=true \
         NON_PF=true | \
-      /usr/gitc/~{bwa_commandline} /dev/stdin - 2> >(tee ~{output_bam_basename}.bwa.stderr.log >&2) | \
+      ${tool_path}/bwa/bwa /dev/stdin - 2> >(tee ~{output_bam_basename}.bwa.stderr.log >&2) | \
       java -Dsamjdk.compression_level=~{compression_level} -Xms1000m -Xmx1000m -jar /usr/gitc/picard.jar \
         MergeBamAlignment \
         VALIDATION_STRINGENCY=SILENT \
@@ -109,7 +109,7 @@ task SamToFastqAndBwaMemAndMba {
     fi
   >>>
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
+    #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     preemptible: preemptible_tries
     memory: "14 GiB"
     cpu: "16"
@@ -150,7 +150,7 @@ task SamSplitter {
     Array[File] split_bams = glob("output_dir/*.bam")
   }
   runtime {
-    docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
+    #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     preemptible: preemptible_tries
     memory: "3.75 GiB"
     disks: "local-disk " + disk_size + " HDD"
