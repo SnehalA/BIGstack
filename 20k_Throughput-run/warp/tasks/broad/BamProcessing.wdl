@@ -20,7 +20,7 @@ task SortSam {
   input {
     File input_bam
     String output_bam_basename
-    Int preemptible_tries
+    Int #preemptible_tries
     Int compression_level
   }
   # SortSam spills to disk a lot more because we are only store 300000 records in RAM now because its faster for our data so it needs
@@ -44,7 +44,7 @@ task SortSam {
     disks: "local-disk " + disk_size + " HDD"
     cpu: "1"
     memory: "5000 MiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -58,7 +58,7 @@ task SortSamSpark {
   input {
     File input_bam
     String output_bam_basename
-    Int preemptible_tries
+    Int #preemptible_tries
     Int compression_level
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
@@ -84,7 +84,7 @@ task SortSamSpark {
     bootDiskSizeGb: "15"
     cpu: "16"
     memory: "102 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -100,7 +100,7 @@ task MarkDuplicates {
     String metrics_filename
     Float total_input_size
     Int compression_level
-    Int preemptible_tries
+    Int #preemptible_tries
 
     # The program default for READ_NAME_REGEX is appropriate in nearly every case.
     # Sometimes we wish to supply "null" in order to turn off optical duplicate detection
@@ -140,7 +140,7 @@ task MarkDuplicates {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.8"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "~{memory_size} GiB"
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -157,7 +157,7 @@ task MarkDuplicatesSpark {
     String metrics_filename
     Float total_input_size
     Int compression_level
-    Int preemptible_tries
+    Int #preemptible_tries
 
     String? read_name_regex
     Int memory_multiplier = 3
@@ -199,7 +199,7 @@ task MarkDuplicatesSpark {
     bootDiskSizeGb: "50"
     cpu: cpu_size
     memory: "~{memory_size} GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -223,7 +223,7 @@ task BaseRecalibrator {
     File ref_fasta
     File ref_fasta_index
     Int bqsr_scatter
-    Int preemptible_tries
+    Int #preemptible_tries
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
 
@@ -252,7 +252,7 @@ task BaseRecalibrator {
   }
   runtime {
     #docker: gatk_docker
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "6 GiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
@@ -275,7 +275,7 @@ task ApplyBQSR {
     File ref_fasta_index
     Int compression_level
     Int bqsr_scatter
-    Int preemptible_tries
+    Int #preemptible_tries
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
     Int memory_multiplier = 1
     Int additional_disk = 20
@@ -317,7 +317,7 @@ task ApplyBQSR {
   }
   runtime {
     #docker: gatk_docker
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "~{memory_size} MiB"
     bootDiskSizeGb: 15
     disks: "local-disk " + disk_size + " HDD"
@@ -333,7 +333,7 @@ task GatherBqsrReports {
   input {
     Array[File] input_bqsr_reports
     String output_report_filename
-    Int preemptible_tries
+    Int #preemptible_tries
     String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
 
@@ -345,7 +345,7 @@ task GatherBqsrReports {
     }
   runtime {
     #docker: gatk_docker
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "3500 MiB"
     bootDiskSizeGb: 15
     disks: "local-disk 20 HDD"
@@ -362,7 +362,7 @@ task GatherSortedBamFiles {
     String output_bam_basename
     Float total_input_size
     Int compression_level
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   # Multiply the input bam size by two to account for the input and output
@@ -378,7 +378,7 @@ task GatherSortedBamFiles {
     }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.8"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "3 GiB"
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -397,7 +397,7 @@ task GatherUnsortedBamFiles {
     String output_bam_basename
     Float total_input_size
     Int compression_level
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   # Multiply the input bam size by two to account for the input and output
@@ -413,7 +413,7 @@ task GatherUnsortedBamFiles {
     }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.8"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "3 GiB"
     disks: "local-disk " + disk_size + " HDD"
   }
@@ -429,7 +429,7 @@ task GenerateSubsettedContaminationResources {
     File contamination_sites_ud
     File contamination_sites_bed
     File contamination_sites_mu
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   String output_ud = bait_set_name + "." + basename(contamination_sites_ud)
@@ -462,7 +462,7 @@ task GenerateSubsettedContaminationResources {
 
   >>>
   runtime {
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "3.5 GiB"
     disks: "local-disk 10 HDD"
     #docker: "us.gcr.io/broad-gotc-prod/bedtools:2.27.1"
@@ -497,7 +497,7 @@ task CheckContamination {
     File ref_fasta
     File ref_fasta_index
     String output_prefix
-    Int preemptible_tries
+    Int #preemptible_tries
     Float contamination_underestimation_factor
     Boolean disable_sanity_check = false
   }
@@ -545,7 +545,7 @@ task CheckContamination {
     CODE
   >>>
   runtime {
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "7.5 GiB"
     disks: "local-disk " + disk_size + " HDD"
     #docker: "us.gcr.io/broad-gotc-prod/verify-bam-id:c1cba76e979904eb69c31520a0d7f5be63c72253-1553018888"

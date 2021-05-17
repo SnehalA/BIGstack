@@ -20,7 +20,7 @@ task CreateExtendedIlluminaManifest {
     File chain_file
 
     Int disk_size
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command <<<
@@ -41,7 +41,7 @@ task CreateExtendedIlluminaManifest {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     disks: "local-disk " + disk_size + " HDD"
     memory: "14 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -61,7 +61,7 @@ task GenerateEmptyVariantCallingMetricsFile {
     String output_metrics_basename
     String cluster_filename
     Int analysis_version_number
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command <<<
@@ -80,7 +80,7 @@ task GenerateEmptyVariantCallingMetricsFile {
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -93,7 +93,7 @@ task BlacklistBarcode {
     File upload_metrics_output
     String chip_well_barcode
     Int analysis_version
-    Int preemptible_tries
+    Int #preemptible_tries
     Array[String] authentication
     String service_account_filename
     String reason
@@ -120,7 +120,7 @@ task BlacklistBarcode {
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 }
 
@@ -132,7 +132,7 @@ task VcfToMercuryFingerprintJson {
     String sample_lsid
     String output_json_filename
     Int disk_size
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command <<<
@@ -172,7 +172,7 @@ task VcfToMercuryFingerprintJson {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -187,7 +187,7 @@ task CreateBafRegressMetricsFile {
     String output_metrics_basefilename
 
     Int disk_size
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command {
@@ -200,7 +200,7 @@ task CreateBafRegressMetricsFile {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -225,7 +225,7 @@ task UploadArraysMetrics {
     String service_account_filename
 
     Int disk_size
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command <<<
@@ -273,7 +273,7 @@ task UploadArraysMetrics {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 
   output {
@@ -287,7 +287,7 @@ task UpdateChipWellBarcodeIndex {
     Array[String] authentication
     String service_account_filename
     Int disk_size
-    Int preemptible_tries
+    Int #preemptible_tries
   }
 
   command <<<
@@ -308,6 +308,6 @@ task UpdateChipWellBarcodeIndex {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
     disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
   }
 }

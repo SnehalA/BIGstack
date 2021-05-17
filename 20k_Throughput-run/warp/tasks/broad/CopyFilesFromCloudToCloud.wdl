@@ -66,7 +66,7 @@ task CopyFilesFromCloudToCloud {
     cpu: "1"
     disks: "local-disk 20 HDD"
     #docker: "us.gcr.io/broad-gotc-prod/dsde-toolbox:dev"
-    preemptible: 3
+    #preemptible: 3
     noAddress: false
   }
 }

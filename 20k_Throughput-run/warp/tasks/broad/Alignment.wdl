@@ -30,7 +30,7 @@ task SamToFastqAndBwaMemAndMba {
     ReferenceFasta reference_fasta
 
     Int compression_level
-    Int preemptible_tries
+    Int #preemptible_tries
     Boolean hard_clip_reads = false
   }
 
@@ -110,7 +110,7 @@ task SamToFastqAndBwaMemAndMba {
   >>>
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "14 GiB"
     cpu: "16"
     disks: "local-disk " + disk_size + " HDD"
@@ -125,7 +125,7 @@ task SamSplitter {
   input {
     File input_bam
     Int n_reads
-    Int preemptible_tries
+    Int #preemptible_tries
     Int compression_level
   }
 
@@ -151,7 +151,7 @@ task SamSplitter {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
-    preemptible: preemptible_tries
+    #preemptible: #preemptible_tries
     memory: "3.75 GiB"
     disks: "local-disk " + disk_size + " HDD"
   }

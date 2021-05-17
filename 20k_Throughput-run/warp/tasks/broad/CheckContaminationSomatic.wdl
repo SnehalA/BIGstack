@@ -18,7 +18,7 @@ task CalculateSomaticContamination {
         File? gatk_override
         Int? additional_disk
         Int mem = 3
-        Int? preemptible_attempts
+        Int? #preemptible_attempts
         Int? max_retries
     }
 
@@ -73,7 +73,7 @@ task CalculateSomaticContamination {
         memory: command_mem + " MB"
         maxRetries: select_first([max_retries, 2])
         disks: "local-disk " + disk_size + " HDD"
-        preemptible: select_first([preemptible_attempts, 3])
+        #preemptible: select_first([#preemptible_attempts, 3])
     }
 
     output {
