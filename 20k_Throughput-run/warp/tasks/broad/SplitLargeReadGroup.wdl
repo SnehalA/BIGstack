@@ -34,7 +34,7 @@ workflow SplitLargeReadGroup {
     ReferenceFasta reference_fasta
 
     Int compression_level
-    Int #preemptible_tries
+    #Int preemptible_tries
     Int reads_per_file = 48000000
     Boolean hard_clip_reads = false
   }

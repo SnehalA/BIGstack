@@ -19,7 +19,7 @@ version 1.0
 task CreateSequenceGroupingTSV {
   input {
     File ref_dict
-    Int #preemptible_tries
+    #Int preemptible_tries
   }
   # Use python to create the Sequencing Groupings used for BQSR and PrintReads Scatter.
   # It outputs to stdout where it is parsed into a wdl Array[Array[String]]
@@ -84,7 +84,7 @@ task ScatterIntervalList {
   command <<<
     set -e
     mkdir out
-    java -Xms1g -jar /usr/gitc/picard.jar \
+    java -Xms1g -jar ${tool_path}/picard.jar \
       IntervalListTools \
       SCATTER_COUNT=~{scatter_count} \
       SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -123,17 +123,17 @@ task ConvertToCram {
     File ref_fasta
     File ref_fasta_index
     String output_basename
-    Int #preemptible_tries
+    #Int preemptible_tries
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB")
-  Int disk_size = ceil(2 * size(input_bam, "GiB") + ref_size) + 20
+  #Int disk_size = ceil(2 * size(input_bam, "GiB") + ref_size) + 20
 
   command <<<
     set -e
     set -o pipefail
 
-    samtools view -C -T ~{ref_fasta} ~{input_bam} | \
+    ${tool_path}/samtools/samtools view -C -T ~{ref_fasta} ~{input_bam} | \
     tee ~{output_basename}.cram | \
     md5sum | awk '{print $1}' > ~{output_basename}.cram.md5
 
@@ -142,14 +142,14 @@ task ConvertToCram {
     export REF_PATH=:
     export REF_CACHE=./ref/cache/%2s/%2s/%s
 
-    samtools index ~{output_basename}.cram
+    ${tool_path}/samtools/samtools index ~{output_basename}.cram
   >>>
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     #preemptible: #preemptible_tries
     memory: "3 GiB"
     cpu: "1"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
   }
   output {
     File output_cram = "~{output_basename}.cram"
@@ -171,16 +171,16 @@ task ConvertToBam {
     set -e
     set -o pipefail
 
-    samtools view -b -o ~{output_basename}.bam -T ~{ref_fasta} ~{input_cram}
+    ${tool_path}/samtools/samtools view -b -o ~{output_basename}.bam -T ~{ref_fasta} ~{input_cram}
 
-    samtools index ~{output_basename}.bam
+    ${tool_path}/samtools/samtools index ~{output_basename}.bam
   >>>
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     #preemptible: 3
     memory: "3 GiB"
     cpu: "1"
-    disks: "local-disk 200 HDD"
+    #disks: "local-disk 200 HDD"
   }
   output {
     File output_bam = "~{output_basename}.bam"
@@ -192,7 +192,7 @@ task ConvertToBam {
 task SumFloats {
   input {
     Array[Float] sizes
-    Int #preemptible_tries
+    #Int preemptible_tries
   }
 
   command <<<

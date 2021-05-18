@@ -64,7 +64,7 @@ task CopyFilesFromCloudToCloud {
   runtime {
     memory: "2 GiB"
     cpu: "1"
-    disks: "local-disk 20 HDD"
+    #disks: "local-disk 20 HDD"
     #docker: "us.gcr.io/broad-gotc-prod/dsde-toolbox:dev"
     #preemptible: 3
     noAddress: false

@@ -32,7 +32,7 @@ version 1.0
 workflow Funcotator {
 
   input {
-    String gatk_docker
+    #String gatk_docker
     File ref_fasta
     File ref_fasta_index
     File ref_dict
@@ -108,9 +108,9 @@ task Funcotate {
     String? extra_args
 
     # runtime args
-    String gatk_docker
+    #String gatk_docker
     Int machine_memory = 3
-    Int #preemptible_attempts = 3
+    #Int preemptible_attempts = 3
     Int additional_disk = 0
     Int cpu_threads = 1
     Boolean use_ssd = false
@@ -124,7 +124,7 @@ task Funcotate {
   # We need to compute and multiply data source size because uncompressing it can get really big.
   # The default data source is 14 GiB, so we multiply that by 10 for uncompressed size
   Int compressed_data_size = if defined(data_sources_tar_gz) then ceil(size(data_sources_tar_gz, "GiB") * 10) else 140
-  Int disk_size = ceil(size(input_vcf, "GiB") + ref_size) + compressed_data_size + 20 + additional_disk
+  #Int disk_size = ceil(size(input_vcf, "GiB") + ref_size) + compressed_data_size + 20 + additional_disk
   String disk_type = if use_ssd then "SSD" else "HDD"
 
 
@@ -132,7 +132,7 @@ task Funcotate {
 
   command <<<
     set -e
-    export GATK_LOCAL_JAR=~{default="/root/gatk.jar" gatk_override}
+    export GATK_LOCAL_JAR=~{default="${tool_path}/gatk-jar" gatk_override}
 
     DATA_SOURCES_FOLDER="$PWD/datasources_dir"
     DATA_SOURCES_TAR_GZ=~{default="" data_sources_tar_gz}
@@ -151,7 +151,7 @@ task Funcotate {
       tar -xzvf $DATA_SOURCES_FOLDER/gnomAD_genome.tar.gz -C $DATA_SOURCES_FOLDER/
     fi
 
-    gatk --java-options "-Xmx~{command_memory}m" Funcotator \
+    ${tool_path}/gatk/gatk --java-options "-Xmx~{command_memory}m" Funcotator \
       --data-sources-path $DATA_SOURCES_FOLDER \
       --ref-version ~{reference_version} \
       --output-file-format ~{output_format} \
@@ -170,8 +170,8 @@ task Funcotate {
   runtime {
     #docker: gatk_docker
     memory: "~{machine_memory} GiB"
-    bootDiskSizeGb: 15
-    disks: "local-disk ~{disk_size} ~{disk_type}"
+    #bootDiskSizeGb: 15
+    #disks: "local-disk ~{disk_size} ~{disk_type}"
     #preemptible: #preemptible_attempts
     cpu: cpu_threads
   }

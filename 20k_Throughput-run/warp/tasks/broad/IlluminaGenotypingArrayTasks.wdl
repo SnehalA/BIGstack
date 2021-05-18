@@ -15,7 +15,7 @@ task Md5Sum {
 
   runtime {
     #docker: "gcr.io/gcp-runtimes/ubuntu_16_0_4:latest"
-    disks: "local-disk 10 HDD"
+    #disks: "local-disk 10 HDD"
     memory: "3.5 GiB"
     #preemptible: 3
   }
@@ -32,8 +32,8 @@ task zCall {
     File input_gtc
     File bead_pool_manifest_csv_file
     File zcall_thresholds_file
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -43,7 +43,7 @@ task zCall {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/zcall:4.0.1-1572616568"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -59,8 +59,8 @@ task BpmToNormalizationManifestCsv {
     File bead_pool_manifest_file
     File cluster_file
     String bead_pool_manifest_csv_file
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
   command {
   java -Xms7g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
@@ -72,7 +72,7 @@ task BpmToNormalizationManifestCsv {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk 10 HDD"
+    #disks: "local-disk 10 HDD"
     memory: "7.5 GiB"
     cpu: 2
     #preemptible: #preemptible_tries
@@ -102,8 +102,8 @@ task GtcToVcf {
 
     # Set memory to n1-standard-2 or n1-highmem-2
     Float memory = if size(extended_chip_manifest_file, "MiB") > 800 then 13 else 7.5
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
 
     File? fingerprint_genotypes_vcf_file
     File? fingerprint_genotypes_vcf_index_file
@@ -131,7 +131,7 @@ task GtcToVcf {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "~{memory} GiB"
     cpu: 2
     #preemptible: #preemptible_tries
@@ -150,8 +150,8 @@ task BafRegress {
     File? maf_file
     String output_results_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -163,7 +163,7 @@ task BafRegress {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/bafregress:1.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -181,8 +181,8 @@ task VcfToAdpc {
     String num_markers_filename
     String output_adpc_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -196,7 +196,7 @@ task VcfToAdpc {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -216,8 +216,8 @@ task VerifyIDIntensity {
     Int num_markers
     String output_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -225,7 +225,7 @@ task VerifyIDIntensity {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/verify-id-intensity:e6354872834fe4262354a6b27bfe85ecc1323677-1561566044"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -242,8 +242,8 @@ task CreateVerifyIDIntensityContaminationMetricsFile {
     File samples_file
     String output_metrics_basefilename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -270,7 +270,7 @@ task CreateVerifyIDIntensityContaminationMetricsFile {
   }
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -289,8 +289,8 @@ task CollectArraysVariantCallingMetrics {
     Float call_rate_threshold
     String output_metrics_basename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -326,7 +326,7 @@ task CollectArraysVariantCallingMetrics {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -344,8 +344,8 @@ task VcfToIntervalList {
     File vcf_file
     String interval_list_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -357,7 +357,7 @@ task VcfToIntervalList {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -378,8 +378,8 @@ task CheckFingerprint {
     String expected_sample_alias
     String output_metrics_basename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   # Paraphrased from Yossi:
@@ -411,7 +411,7 @@ task CheckFingerprint {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -437,8 +437,8 @@ task SelectVariants {
     File ref_fasta_index
     File ref_dict
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   String base_vcf = basename(output_vcf_filename)
@@ -448,7 +448,7 @@ task SelectVariants {
   command <<<
     set -eo pipefail
 
-    /gatk/gatk --java-options -Xms2g \
+    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
       SelectVariants \
       -V ~{input_vcf_file} \
       ~{true="--exclude-filtered true" false="" excludeFiltered} \
@@ -460,7 +460,7 @@ task SelectVariants {
 
   runtime {
     #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -481,12 +481,12 @@ task SelectIndels {
     File ref_fasta_index
     File ref_dict
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
-    /gatk/gatk --java-options -Xms2g \
+    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
       SelectVariants \
       -V ~{input_vcf_file} \
       --select-type-to-include INDEL \
@@ -496,7 +496,7 @@ task SelectIndels {
 
   runtime {
     #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -516,8 +516,8 @@ task AutoCall {
     File bead_pool_manifest_file
     File? cluster_file
     Boolean? is_gender_autocall
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   String gtc_filename = "~{chip_well_barcode}.gtc"
@@ -543,7 +543,7 @@ task AutoCall {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/illumina-iaap-autocall:1.0.1-1572616845"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "7 GiB"
     #preemptible: #preemptible_tries
   }
@@ -564,8 +564,8 @@ task MergePedIntoVcf {
 
     String output_vcf_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
@@ -584,7 +584,7 @@ task MergePedIntoVcf {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
     memory: "3.5 GiB"
     cpu: "1"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     #preemptible: #preemptible_tries
   }
 
@@ -605,7 +605,7 @@ task SubsetArrayVCF {
   }
 
   String output_name = basename(input_vcf_file, ".vcf") + "_subset.vcf"
-  Int disk_size = ceil(size(input_vcf_file, "GiB") * 2 + size(ref_fasta, "GiB"))
+  #Int disk_size = ceil(size(input_vcf_file, "GiB") * 2 + size(ref_fasta, "GiB"))
 
   command <<<
     gatk SelectVariants -V  ~{input_vcf_file} -L ~{intervals} -O ~{output_name} -R ~{ref_fasta}
@@ -618,7 +618,7 @@ task SubsetArrayVCF {
 
   runtime {
     #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
   }
 
@@ -637,8 +637,8 @@ task GenotypeConcordance {
     String output_metrics_basename
     Float genotype_concordance_threshold=0.99
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -681,7 +681,7 @@ task GenotypeConcordance {
 
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/picard-cloud:2.23.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -703,11 +703,11 @@ task ValidateVariants {
     File ref_fasta_index
     File ref_dict
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
   command <<<
-    /gatk/gatk --java-options -Xms2g \
+    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
       ValidateVariants \
       -V ~{input_vcf_file} \
       --validation-type-to-exclude ALLELES \
@@ -716,7 +716,7 @@ task ValidateVariants {
 
   runtime {
     #docker: "us.gcr.io/broad-gatk/gatk:4.1.3.0"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }

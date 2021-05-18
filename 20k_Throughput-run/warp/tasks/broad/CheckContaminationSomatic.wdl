@@ -14,7 +14,7 @@ task CalculateSomaticContamination {
         File contamination_vcf_index
 
         # runtime
-        String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
+        #String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
         File? gatk_override
         Int? additional_disk
         Int mem = 3
@@ -22,7 +22,7 @@ task CalculateSomaticContamination {
         Int? max_retries
     }
 
-    Int disk_size = ceil(size(tumor_cram_or_bam,"GB") + size(normal_cram_or_bam,"GB")) + select_first([additional_disk, 10])
+    #Int disk_size = ceil(size(tumor_cram_or_bam,"GB") + size(normal_cram_or_bam,"GB")) + select_first([additional_disk, 10])
 
     # Mem is in units of GB but our command and memory runtime values are in MB
     Int machine_mem = mem * 1000
@@ -31,9 +31,9 @@ task CalculateSomaticContamination {
     command <<<
         set -e
 
-        export GATK_LOCAL_JAR=~{default="/root/gatk.jar" gatk_override}
+        export GATK_LOCAL_JAR=~{default="${tool_path}/gatk-jar" gatk_override}
 
-        gatk --java-options "-Xmx~{command_mem}m" GetPileupSummaries \
+        ${tool_path}/gatk/gatk --java-options "-Xmx~{command_mem}m" GetPileupSummaries \
              -R ~{reference} \
              -I ~{tumor_cram_or_bam} \
              ~{"--interval-set-rule INTERSECTION -L " + intervals} \
@@ -43,7 +43,7 @@ task CalculateSomaticContamination {
 
         if [[ -f "~{normal_cram_or_bam}" ]];
         then
-            gatk --java-options "-Xmx~{command_mem}m" GetPileupSummaries \
+            ${tool_path}/gatk/gatk --java-options "-Xmx~{command_mem}m" GetPileupSummaries \
                  -R ~{reference} \
                  -I ~{normal_cram_or_bam} \
                  ~{"--interval-set-rule INTERSECTION -L " + intervals} \
@@ -51,14 +51,14 @@ task CalculateSomaticContamination {
                  -L ~{contamination_vcf} \
                  -O normal_pileups.table
 
-            gatk --java-options "-Xmx~{command_mem}m" CalculateContamination \
+            ${tool_path}/gatk/gatk --java-options "-Xmx~{command_mem}m" CalculateContamination \
                  -I pileups.table \
                  -O contamination.table \
                  --tumor-segmentation segments.table \
                  -matched normal_pileups.table
         else
             touch normal_pileups.table
-            gatk --java-options "-Xmx~{command_mem}m" CalculateContamination \
+            ${tool_path}/gatk/gatk --java-options "-Xmx~{command_mem}m" CalculateContamination \
                  -I pileups.table \
                  -O contamination.table \
                  --tumor-segmentation segments.table
@@ -69,10 +69,10 @@ task CalculateSomaticContamination {
 
     runtime {
         #docker: gatk_docker
-        bootDiskSizeGb: 12
+        #bootDiskSizeGb: 12
         memory: command_mem + " MB"
         maxRetries: select_first([max_retries, 2])
-        disks: "local-disk " + disk_size + " HDD"
+        #disks: "local-disk " + disk_size + " HDD"
         #preemptible: select_first([#preemptible_attempts, 3])
     }
 

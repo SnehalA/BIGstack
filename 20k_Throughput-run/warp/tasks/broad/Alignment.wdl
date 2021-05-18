@@ -30,17 +30,17 @@ task SamToFastqAndBwaMemAndMba {
     ReferenceFasta reference_fasta
 
     Int compression_level
-    Int #preemptible_tries
+    #Int preemptible_tries
     Boolean hard_clip_reads = false
   }
 
   Float unmapped_bam_size = size(input_bam, "GiB")
   Float ref_size = size(reference_fasta.ref_fasta, "GiB") + size(reference_fasta.ref_fasta_index, "GiB") + size(reference_fasta.ref_dict, "GiB")
   Float bwa_ref_size = ref_size + size(reference_fasta.ref_alt, "GiB") + size(reference_fasta.ref_amb, "GiB") + size(reference_fasta.ref_ann, "GiB") + size(reference_fasta.ref_bwt, "GiB") + size(reference_fasta.ref_pac, "GiB") + size(reference_fasta.ref_sa, "GiB")
-  # Sometimes the output is larger than the input, or a task can spill to disk.
+  # Sometimes the output is larger than the input, or a task can spill to #disks.
   # In these cases we need to account for the input (1) and the output (1.5) or the input(1), the output(1), and spillage (.5).
   Float disk_multiplier = 2.5
-  Int disk_size = ceil(unmapped_bam_size + bwa_ref_size + (disk_multiplier * unmapped_bam_size) + 20)
+  #Int disk_size = ceil(unmapped_bam_size + bwa_ref_size + (disk_multiplier * unmapped_bam_size) + 20)
 
   command <<<
 
@@ -62,14 +62,14 @@ task SamToFastqAndBwaMemAndMba {
     bash_ref_fasta=~{reference_fasta.ref_fasta}
     # if reference_fasta.ref_alt has data in it,
     if [ -s ~{reference_fasta.ref_alt} ]; then
-      java -Xms1000m -Xmx1000m -jar /usr/gitc/picard.jar \
+      java -Xms1000m -Xmx1000m -jar ${tool_path}/picard.jar \
         SamToFastq \
         INPUT=~{input_bam} \
         FASTQ=/dev/stdout \
         INTERLEAVE=true \
         NON_PF=true | \
       ${tool_path}/bwa/bwa /dev/stdin - 2> >(tee ~{output_bam_basename}.bwa.stderr.log >&2) | \
-      java -Dsamjdk.compression_level=~{compression_level} -Xms1000m -Xmx1000m -jar /usr/gitc/picard.jar \
+      java -Dsamjdk.compression_level=~{compression_level} -Xms1000m -Xmx1000m -jar ${tool_path}/picard.jar \
         MergeBamAlignment \
         VALIDATION_STRINGENCY=SILENT \
         EXPECTED_ORIENTATIONS=FR \
@@ -113,7 +113,7 @@ task SamToFastqAndBwaMemAndMba {
     #preemptible: #preemptible_tries
     memory: "14 GiB"
     cpu: "16"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
   }
   output {
     File output_bam = "~{output_bam_basename}.bam"
@@ -125,22 +125,22 @@ task SamSplitter {
   input {
     File input_bam
     Int n_reads
-    Int #preemptible_tries
+    #Int preemptible_tries
     Int compression_level
   }
 
   Float unmapped_bam_size = size(input_bam, "GiB")
   # Since the output bams are less compressed than the input bam we need a disk multiplier that's larger than 2.
   Float disk_multiplier = 2.5
-  Int disk_size = ceil(disk_multiplier * unmapped_bam_size + 20)
+  #Int disk_size = ceil(disk_multiplier * unmapped_bam_size + 20)
 
   command {
     set -e
     mkdir output_dir
 
-    total_reads=$(samtools view -c ~{input_bam})
+    total_reads=$(${tool_path}/samtools/samtools view -c ~{input_bam})
 
-    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -jar /usr/gitc/picard.jar SplitSamByNumberOfReads \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -jar ${tool_path}/picard.jar SplitSamByNumberOfReads \
       INPUT=~{input_bam} \
       OUTPUT=output_dir \
       SPLIT_TO_N_READS=~{n_reads} \
@@ -153,6 +153,6 @@ task SamSplitter {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
     #preemptible: #preemptible_tries
     memory: "3.75 GiB"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
   }
 }

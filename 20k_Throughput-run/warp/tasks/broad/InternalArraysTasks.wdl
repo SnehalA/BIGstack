@@ -19,12 +19,12 @@ task CreateExtendedIlluminaManifest {
 
     File chain_file
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
-    java -Xms13g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms13g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
             CreateExtendedIlluminaManifest \
             --INPUT ~{input_csv} \
             --OUTPUT_BASE_FILE ~{output_base_name} \
@@ -39,7 +39,7 @@ task CreateExtendedIlluminaManifest {
 
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "14 GiB"
     #preemptible: #preemptible_tries
   }
@@ -61,11 +61,11 @@ task GenerateEmptyVariantCallingMetricsFile {
     String output_metrics_basename
     String cluster_filename
     Int analysis_version_number
-    Int #preemptible_tries
+    #Int preemptible_tries
   }
 
   command <<<
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
             GenerateEmptyVariantCallingMetrics \
             --CHIP_WELL_BARCODE ~{chip_well_barcode} \
             --SAMPLE_ALIAS "~{sample_alias}" \
@@ -93,7 +93,7 @@ task BlacklistBarcode {
     File upload_metrics_output
     String chip_well_barcode
     Int analysis_version
-    Int #preemptible_tries
+    #Int preemptible_tries
     Array[String] authentication
     String service_account_filename
     String reason
@@ -106,7 +106,7 @@ task BlacklistBarcode {
     AUTH=~{write_lines(authentication)} && chmod +x $AUTH && $AUTH
     export GOOGLE_APPLICATION_CREDENTIALS=/cromwell_root/~{service_account_filename}
 
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
                   ArraysManualBlacklistUpdate \
                   --CHIP_WELL_BARCODE ~{chip_well_barcode} \
                   --ANALYSIS_VERSION ~{analysis_version} \
@@ -131,8 +131,8 @@ task VcfToMercuryFingerprintJson {
     File variant_calling_detail_metrics_file
     String sample_lsid
     String output_json_filename
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -158,7 +158,7 @@ task VcfToMercuryFingerprintJson {
        exit 1;
     fi
 
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       VcfToMercuryFingerprintJson \
       --VCF ~{input_vcf_file} \
       --LSID ~{sample_lsid} \
@@ -170,7 +170,7 @@ task VcfToMercuryFingerprintJson {
 
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -186,19 +186,19 @@ task CreateBafRegressMetricsFile {
     File input_file
     String output_metrics_basefilename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command {
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       CreateBafRegressMetricsFile \
       --INPUT ~{input_file} \
       --OUTPUT ~{output_metrics_basefilename}
   }
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -224,8 +224,8 @@ task UploadArraysMetrics {
     Array[String] authentication
     String service_account_filename
 
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -260,7 +260,7 @@ task UploadArraysMetrics {
 
     ! [ -z ~{arrays_control_code_summary_metrics} ] &&
     cp ~{arrays_control_code_summary_metrics} metrics_upload_dir
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       UploadArraysMetrics \
       --ANALYSIS_DIRECTORY metrics_upload_dir \
       --DB_USERNAME_FILE cloudsql.db_user.txt \
@@ -271,7 +271,7 @@ task UploadArraysMetrics {
 
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
@@ -286,8 +286,8 @@ task UpdateChipWellBarcodeIndex {
     File params_file
     Array[String] authentication
     String service_account_filename
-    Int disk_size
-    Int #preemptible_tries
+    #Int disk_size
+    #Int preemptible_tries
   }
 
   command <<<
@@ -295,7 +295,7 @@ task UpdateChipWellBarcodeIndex {
 
     AUTH=~{write_lines(authentication)} && chmod +x $AUTH && $AUTH
     export GOOGLE_APPLICATION_CREDENTIALS=/cromwell_root/~{service_account_filename}
-    java -Xms2g -Dpicard.useLegacyParser=false -jar /usr/gitc/picard-private.jar \
+    java -Xms2g -Dpicard.useLegacyParser=false -jar ${tool_path}/picard.jar \
       UpdateChipWellBarcodeIndex \
       --PARAMS_FILE ~{params_file} \
       --DB_USERNAME_FILE cloudsql.db_user.txt \
@@ -306,7 +306,7 @@ task UpdateChipWellBarcodeIndex {
 
   runtime {
     #docker: "us.gcr.io/broad-arrays-prod/arrays-picard-private:4.0.10-1602016912"
-    disks: "local-disk " + disk_size + " HDD"
+    #disks: "local-disk " + disk_size + " HDD"
     memory: "3.5 GiB"
     #preemptible: #preemptible_tries
   }
