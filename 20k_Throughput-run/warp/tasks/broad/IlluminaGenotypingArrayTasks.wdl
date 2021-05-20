@@ -448,7 +448,7 @@ task SelectVariants {
   command <<<
     set -eo pipefail
 
-    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
+    ${tool_path}/gatk/gatk --java-options -Xms2g \
       SelectVariants \
       -V ~{input_vcf_file} \
       ~{true="--exclude-filtered true" false="" excludeFiltered} \
@@ -486,7 +486,7 @@ task SelectIndels {
   }
 
   command <<<
-    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
+    ${tool_path}/gatk/gatk --java-options -Xms2g \
       SelectVariants \
       -V ~{input_vcf_file} \
       --select-type-to-include INDEL \
@@ -707,7 +707,7 @@ task ValidateVariants {
     #Int preemptible_tries
   }
   command <<<
-    /gatk/${tool_path}/gatk/gatk --java-options -Xms2g \
+    ${tool_path}/gatk/gatk --java-options -Xms2g \
       ValidateVariants \
       -V ~{input_vcf_file} \
       --validation-type-to-exclude ALLELES \

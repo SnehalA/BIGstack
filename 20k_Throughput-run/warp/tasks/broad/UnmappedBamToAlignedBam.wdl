@@ -118,8 +118,8 @@ workflow UnmappedBamToAlignedBam {
   }
 
   # MarkDuplicates and SortSam currently take too long for #preemptibles if the input data is too large
-  Float gb_size_cutoff_for_#preemptibles = 110.0
-  Boolean data_too_large_for_#preemptibles = SumFloats.total_size > gb_size_cutoff_for_#preemptibles
+  Float gb_size_cutoff_for_preemptibless = 110.0
+  Boolean data_too_large_for_preemptibless = SumFloats.total_size > gb_size_cutoff_for_preemptibless
 
   # Aggregate aligned+merged flowcell BAM files and mark duplicates
   # We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
@@ -131,7 +131,7 @@ workflow UnmappedBamToAlignedBam {
       metrics_filename = sample_and_unmapped_bams.base_file_name + ".duplicate_metrics",
       total_input_size = SumFloats.total_size,
       compression_level = compression_level,
-      #preemptible_tries = if data_too_large_for_#preemptibles then 0 else papi_settings.agg_#preemptible_tries
+      #preemptible_tries = if data_too_large_for_preemptibless then 0 else papi_settings.agg_preemptibles_tries
   }
 
   # Sort aggregated+deduped BAM file and fix tags
@@ -140,7 +140,7 @@ workflow UnmappedBamToAlignedBam {
       input_bam = MarkDuplicates.output_bam,
       output_bam_basename = sample_and_unmapped_bams.base_file_name + ".aligned.duplicate_marked.sorted",
       compression_level = compression_level,
-      #preemptible_tries = if data_too_large_for_#preemptibles then 0 else papi_settings.agg_#preemptible_tries
+      #preemptible_tries = if data_too_large_for_preemptibless then 0 else papi_settings.agg_preemptibles_tries
   }
 
   Float agg_bam_size = size(SortSampleBam.output_bam, "GiB")
@@ -156,7 +156,7 @@ workflow UnmappedBamToAlignedBam {
         total_input_size = agg_bam_size,
         lod_threshold = lod_threshold,
         cross_check_by = cross_check_fingerprints_by,
-        #preemptible_tries = papi_settings.agg_#preemptible_tries
+        #preemptible_tries = papi_settings.agg_preemptibles_tries
     }
   }
 
@@ -178,7 +178,7 @@ workflow UnmappedBamToAlignedBam {
       ref_fasta = references.reference_fasta.ref_fasta,
       ref_fasta_index = references.reference_fasta.ref_fasta_index,
       output_prefix = sample_and_unmapped_bams.base_file_name + ".preBqsr",
-      #preemptible_tries = papi_settings.agg_#preemptible_tries,
+      #preemptible_tries = papi_settings.agg_preemptibles_tries,
       contamination_underestimation_factor = 0.75
   }
 
@@ -206,7 +206,7 @@ workflow UnmappedBamToAlignedBam {
         ref_fasta = references.reference_fasta.ref_fasta,
         ref_fasta_index = references.reference_fasta.ref_fasta_index,
         bqsr_scatter = bqsr_divisor,
-        #preemptible_tries = papi_settings.agg_#preemptible_tries
+        #preemptible_tries = papi_settings.agg_preemptibles_tries
     }
   }
 
@@ -233,7 +233,7 @@ workflow UnmappedBamToAlignedBam {
         ref_fasta_index = references.reference_fasta.ref_fasta_index,
         bqsr_scatter = bqsr_divisor,
         compression_level = compression_level,
-        #preemptible_tries = papi_settings.agg_#preemptible_tries,
+        #preemptible_tries = papi_settings.agg_preemptibles_tries,
         bin_base_qualities = bin_base_qualities,
         somatic = somatic
     }
@@ -246,7 +246,7 @@ workflow UnmappedBamToAlignedBam {
       output_bam_basename = sample_and_unmapped_bams.base_file_name,
       total_input_size = agg_bam_size,
       compression_level = compression_level,
-      #preemptible_tries = papi_settings.agg_#preemptible_tries
+      #preemptible_tries = papi_settings.agg_preemptibles_tries
   }
 
   # Outputs that will be retained when execution is complete
