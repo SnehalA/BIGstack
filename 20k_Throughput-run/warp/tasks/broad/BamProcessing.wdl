@@ -26,10 +26,10 @@ task SortSam {
   # SortSam spills to disk a lot more because we are only store 300000 records in RAM now because its faster for our data so it needs
   # more disk space.  Also it spills to disk in an uncompressed format so we need to account for that with a larger multiplier
   Float sort_sam_disk_multiplier = 3.25
-  #Int disk_size = ceil(sort_sam_disk_multiplier * size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(sort_sam_disk_multiplier * size(input_bam, "GiB")) + 20
 
   command {
-    java -Dsamjdk.compression_level=~{compression_level} -Xms4000m -jar ${tool_path}/picard.jar \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms4000m -jar /fastdata/01/genomics/tools/picard.jar \
       SortSam \
       INPUT=~{input_bam} \
       OUTPUT=~{output_bam_basename}.bam \
@@ -65,18 +65,18 @@ task SortSamSpark {
   # SortSam spills to disk a lot more because we are only store 300000 records in RAM now because its faster for our data so it needs
   # more disk space.  Also it spills to disk in an uncompressed format so we need to account for that with a larger multiplier
   Float sort_sam_disk_multiplier = 3.25
-  #Int disk_size = ceil(sort_sam_disk_multiplier * size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(sort_sam_disk_multiplier * size(input_bam, "GiB")) + 20
 
   command {
     set -e
 
-    ${tool_path}/gatk/gatk --java-options "-Dsamjdk.compression_level=~{compression_level} -Xms100g -Xmx100g" \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-Dsamjdk.compression_level=~{compression_level} -Xms100g -Xmx100g" \
       SortSamSpark \
       -I ~{input_bam} \
       -O ~{output_bam_basename}.bam \
       -- --conf spark.local.dir=. --spark-master 'local[16]' --conf 'spark.kryo.referenceTracking=false'
 
-    ${tool_path}/samtools/samtools index ~{output_bam_basename}.bam ~{output_bam_basename}.bai
+    /fastdata/01/genomics/tools/samtools/samtools index ~{output_bam_basename}.bam ~{output_bam_basename}.bai
   }
   runtime {
     #docker: gatk_docker
@@ -115,7 +115,7 @@ task MarkDuplicates {
   # The merged bam will be smaller than the sum of the parts so we need to account for the unmerged inputs and the merged output.
   # Mark Duplicates takes in as input readgroup bams and outputs a slightly smaller aggregated bam. Giving .25 as wiggleroom
   Float md_disk_multiplier = 3
-  #Int disk_size = ceil(md_disk_multiplier * total_input_size) + additional_disk
+  Int disk_size = ceil(md_disk_multiplier * total_input_size) + additional_disk
 
   Float memory_size = 7.5 * memory_multiplier
   Int java_memory_size = (ceil(memory_size) - 2)
@@ -125,7 +125,7 @@ task MarkDuplicates {
   # While query-grouped isn't actually query-sorted, it's good enough for MarkDuplicates with ASSUME_SORT_ORDER="queryname"
 
   command {
-    java -Dsamjdk.compression_level=~{compression_level} -Xms~{java_memory_size}g -jar ${tool_path}/picard.jar \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms~{java_memory_size}g -jar /fastdata/01/genomics/tools/picard.jar \
       MarkDuplicates \
       INPUT=~{sep=' INPUT=' input_bams} \
       OUTPUT=~{output_bam_basename}.bam \
@@ -167,7 +167,7 @@ task MarkDuplicatesSpark {
   # The merged bam will be smaller than the sum of the parts so we need to account for the unmerged inputs and the merged output.
   # Mark Duplicates takes in as input readgroup bams and outputs a slightly smaller aggregated bam. Giving 2.5 as wiggleroom
   Float md_disk_multiplier = 2.5
-  #Int disk_size = ceil(md_disk_multiplier * total_input_size) + 20
+  Int disk_size = ceil(md_disk_multiplier * total_input_size) + 20
 
   Int memory_size = ceil(16 * memory_multiplier)
   Int java_memory_size = (memory_size - 6)
@@ -179,8 +179,8 @@ task MarkDuplicatesSpark {
   # MarkDuplicatesSpark requires PAPIv2
   command <<<
     set -e
-    export GATK_LOCAL_JAR=${tool_path}/gatk-jar
-    ${tool_path}/gatk/gatk --java-options "-Dsamjdk.compression_level=~{compression_level} -Xmx~{java_memory_size}g" \
+    export GATK_LOCAL_JAR=/fastda../../genomics/tools/gatk-jar
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-Dsamjdk.compression_level=~{compression_level} -Xmx~{java_memory_size}g" \
       MarkDuplicatesSpark \
       --input ~{sep=' --input ' input_bams} \
       --output ~{output_bam_location} \
@@ -229,7 +229,7 @@ task BaseRecalibrator {
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
   Float dbsnp_size = size(dbsnp_vcf, "GiB")
-  #Int disk_size = ceil((size(input_bam, "GiB") / bqsr_scatter) + ref_size + dbsnp_size) + 20
+  Int disk_size = ceil((size(input_bam, "GiB") / bqsr_scatter) + ref_size + dbsnp_size) + 20
 
   parameter_meta {
     input_bam: {
@@ -238,7 +238,7 @@ task BaseRecalibrator {
   }
 
   command {
-    ${tool_path}/gatk/gatk --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -XX:+PrintFlagsFinal \
       -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCDetails \
       -Xloggc:gc_log.log -Xms5g" \
       BaseRecalibrator \
@@ -284,7 +284,7 @@ task ApplyBQSR {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil((size(input_bam, "GiB") * 3 / bqsr_scatter) + ref_size) + additional_disk
+  Int disk_size = ceil((size(input_bam, "GiB") * 3 / bqsr_scatter) + ref_size) + additional_disk
 
   Int memory_size = ceil(3500 * memory_multiplier)
 
@@ -297,7 +297,7 @@ task ApplyBQSR {
   }
 
   command {
-    ${tool_path}/gatk/gatk --java-options "-XX:+PrintFlagsFinal -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-XX:+PrintFlagsFinal -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps \
       -XX:+PrintGCDetails -Xloggc:gc_log.log \
       -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Dsamjdk.compression_level=~{compression_level} -Xms3000m" \
       ApplyBQSR \
@@ -338,7 +338,7 @@ task GatherBqsrReports {
   }
 
   command {
-    ${tool_path}/gatk/gatk --java-options "-Xms3000m" \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-Xms3000m" \
       GatherBQSRReports \
       -I ~{sep=' -I ' input_bqsr_reports} \
       -O ~{output_report_filename}
@@ -366,10 +366,10 @@ task GatherSortedBamFiles {
   }
 
   # Multiply the input bam size by two to account for the input and output
-  #Int disk_size = ceil(2 * total_input_size) + 20
+  Int disk_size = ceil(2 * total_input_size) + 20
 
   command {
-    java -Dsamjdk.compression_level=~{compression_level} -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       GatherBamFiles \
       INPUT=~{sep=' INPUT=' input_bams} \
       OUTPUT=~{output_bam_basename}.bam \
@@ -401,10 +401,10 @@ task GatherUnsortedBamFiles {
   }
 
   # Multiply the input bam size by two to account for the input and output
-  #Int disk_size = ceil(2 * total_input_size) + 20
+  Int disk_size = ceil(2 * total_input_size) + 20
 
   command {
-    java -Dsamjdk.compression_level=~{compression_level} -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       GatherBamFiles \
       INPUT=~{sep=' INPUT=' input_bams} \
       OUTPUT=~{output_bam_basename}.bam \
@@ -502,7 +502,7 @@ task CheckContamination {
     Boolean disable_sanity_check = false
   }
 
-  #Int disk_size = ceil(size(input_bam, "GiB") + size(ref_fasta, "GiB")) + 30
+  Int disk_size = ceil(size(input_bam, "GiB") + size(ref_fasta, "GiB")) + 30
 
   command <<<
     set -e

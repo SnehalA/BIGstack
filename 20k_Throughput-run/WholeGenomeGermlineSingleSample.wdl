@@ -28,31 +28,31 @@ version 1.0
 ## page at https://hub.docker.com/r/broadinstitute/genomes-in-the-cloud/ for detailed
 ## licensing information pertaining to the included programs.
 
-import "../../../../../../tasks/broad/UnmappedBamToAlignedBam.wdl" as ToBam
-import "../../../../../../tasks/broad/AggregatedBamQC.wdl" as AggregatedQC
-import "../../../../../../tasks/broad/Qc.wdl" as QC
-import "../../../../../../tasks/broad/BamToCram.wdl" as ToCram
-import "../../../../../../pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl" as ToGvcf
-import "../../../../../../structs/dna_seq/DNASeqStructs.wdl"
+import "warp/tasks/broad/UnmappedBamToAlignedBam.wdl" as ToBam
+import "warp/tasks/broad/AggregatedBamQC.wdl" as AggregatedQC
+import "warp/tasks/broad/Qc.wdl" as QC
+import "warp/tasks/broad/BamToCram.wdl" as ToCram
+import "warp/pipelines/broad/dna_seq/germline/variant_calling/VariantCalling.wdl" as ToGvcf
+import "warp/structs/dna_seq/DNASeqStructs.wdl"
 
 # WORKFLOW DEFINITION
 workflow WholeGenomeGermlineSingleSample {
 
   String pipeline_version = "2.3.3"
+  String tool_path = "$GENOMICS_PATH/tools/"
 
   input {
     SampleAndUnmappedBams sample_and_unmapped_bams
     DNASeqSingleSampleReferences references
     VariantCallingScatterSettings scatter_settings
     PapiSettings papi_settings
-
     File? fingerprint_genotypes_file
     File? fingerprint_genotypes_index
 
     File wgs_coverage_interval_list
 
     Boolean provide_bam_output = false
-    Boolean use_gatk3_haplotype_caller = true
+    Boolean use_gatk3_haplotype_caller = false
   }
 
   # Not overridable:
@@ -102,7 +102,7 @@ workflow WholeGenomeGermlineSingleSample {
       duplication_metrics = UnmappedBamToAlignedBam.duplicate_metrics,
       chimerism_metrics = AggregatedBamQC.agg_alignment_summary_metrics,
       base_file_name = sample_and_unmapped_bams.base_file_name,
-      agg_preemptible_tries = papi_settings.agg_preemptible_tries
+      #agg_preemptible_tries = papi_settings.#agg_preemptible_tries
   }
 
   # QC the sample WGS metrics (stringent thresholds)
@@ -115,7 +115,7 @@ workflow WholeGenomeGermlineSingleSample {
       ref_fasta_index = references.reference_fasta.ref_fasta_index,
       wgs_coverage_interval_list = wgs_coverage_interval_list,
       read_length = read_length,
-      preemptible_tries = papi_settings.agg_preemptible_tries
+      #preemptible_tries = papi_settings.#agg_preemptible_tries
   }
 
   # QC the sample raw WGS metrics (common thresholds)
@@ -128,7 +128,7 @@ workflow WholeGenomeGermlineSingleSample {
       ref_fasta_index = references.reference_fasta.ref_fasta_index,
       wgs_coverage_interval_list = wgs_coverage_interval_list,
       read_length = read_length,
-      preemptible_tries = papi_settings.agg_preemptible_tries
+      #preemptible_tries = papi_settings.#agg_preemptible_tries
   }
 
   call ToGvcf.VariantCalling as BamToGvcf {
@@ -147,7 +147,7 @@ workflow WholeGenomeGermlineSingleSample {
       dbsnp_vcf_index = references.dbsnp_vcf_index,
       base_file_name = sample_and_unmapped_bams.base_file_name,
       final_vcf_base_name = final_gvcf_base_name,
-      agg_preemptible_tries = papi_settings.agg_preemptible_tries,
+      #agg_preemptible_tries = papi_settings.#agg_preemptible_tries,
       use_gatk3_haplotype_caller = use_gatk3_haplotype_caller
   }
 

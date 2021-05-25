@@ -40,14 +40,14 @@ task SamToFastqAndBwaMemAndMba {
   # Sometimes the output is larger than the input, or a task can spill to #disks.
   # In these cases we need to account for the input (1) and the output (1.5) or the input(1), the output(1), and spillage (.5).
   Float disk_multiplier = 2.5
-  #Int disk_size = ceil(unmapped_bam_size + bwa_ref_size + (disk_multiplier * unmapped_bam_size) + 20)
+  Int disk_size = ceil(unmapped_bam_size + bwa_ref_size + (disk_multiplier * unmapped_bam_size) + 20)
 
   command <<<
 
 
     # This is done before "set -o pipefail" because "bwa" will have a rc=1 and we don't want to allow rc=1 to succeed
     # because the sed may also fail with that error and that is something we actually want to fail on.
-    BWA_VERSION=$(${tool_path}/bwa/bwa 2>&1 | \
+    BWA_VERSION=$(/fastda../../genomics/tools/bwa/bwa 2>&1 | \
     grep -e '^Version' | \
     sed 's/Version: //')
 
@@ -62,14 +62,14 @@ task SamToFastqAndBwaMemAndMba {
     bash_ref_fasta=~{reference_fasta.ref_fasta}
     # if reference_fasta.ref_alt has data in it,
     if [ -s ~{reference_fasta.ref_alt} ]; then
-      java -Xms1000m -Xmx1000m -jar ${tool_path}/picard.jar \
+      java -Xms1000m -Xmx1000m -jar /fastdata/01/genomics/tools/picard.jar \
         SamToFastq \
         INPUT=~{input_bam} \
         FASTQ=/dev/stdout \
         INTERLEAVE=true \
         NON_PF=true | \
-      ${tool_path}/bwa/bwa /dev/stdin - 2> >(tee ~{output_bam_basename}.bwa.stderr.log >&2) | \
-      java -Dsamjdk.compression_level=~{compression_level} -Xms1000m -Xmx1000m -jar ${tool_path}/picard.jar \
+      /fastdata/01/genomics/tools/bwa/bwa /dev/stdin - 2> >(tee ~{output_bam_basename}.bwa.stderr.log >&2) | \
+      java -Dsamjdk.compression_level=~{compression_level} -Xms1000m -Xmx1000m -jar /fastdata/01/genomics/tools/picard.jar \
         MergeBamAlignment \
         VALIDATION_STRINGENCY=SILENT \
         EXPECTED_ORIENTATIONS=FR \
@@ -132,15 +132,15 @@ task SamSplitter {
   Float unmapped_bam_size = size(input_bam, "GiB")
   # Since the output bams are less compressed than the input bam we need a disk multiplier that's larger than 2.
   Float disk_multiplier = 2.5
-  #Int disk_size = ceil(disk_multiplier * unmapped_bam_size + 20)
+  Int disk_size = ceil(disk_multiplier * unmapped_bam_size + 20)
 
   command {
     set -e
     mkdir output_dir
 
-    total_reads=$(${tool_path}/samtools/samtools view -c ~{input_bam})
+    total_reads=$(/fastda../../genomics/tools/samtools/samtools view -c ~{input_bam})
 
-    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -jar ${tool_path}/picard.jar SplitSamByNumberOfReads \
+    java -Dsamjdk.compression_level=~{compression_level} -Xms3000m -jar /fastdata/01/genomics/tools/picard.jar SplitSamByNumberOfReads \
       INPUT=~{input_bam} \
       OUTPUT=output_dir \
       SPLIT_TO_N_READS=~{n_reads} \

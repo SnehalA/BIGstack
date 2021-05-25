@@ -23,10 +23,10 @@ task CollectQualityYieldMetrics {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(size(input_bam, "GiB")) + 20
 
   command {
-    java -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectQualityYieldMetrics \
       INPUT=~{input_bam} \
       OQ=true \
@@ -51,10 +51,10 @@ task CollectUnsortedReadgroupBamQualityMetrics {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(size(input_bam, "GiB")) + 20
 
   command {
-    java -Xms5000m -jar ${tool_path}/picard.jar \
+    java -Xms5000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectMultipleMetrics \
       INPUT=~{input_bam} \
       OUTPUT=~{output_bam_prefix} \
@@ -102,7 +102,7 @@ task CollectReadgroupBamQualityMetrics {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
 
   command {
     # These are optionally generated, but need to exist for Cromwell's sake
@@ -110,7 +110,7 @@ task CollectReadgroupBamQualityMetrics {
       ~{output_bam_prefix}.gc_bias.pdf \
       ~{output_bam_prefix}.gc_bias.summary_metrics
 
-    java -Xms5000m -jar ${tool_path}/picard.jar \
+    java -Xms5000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectMultipleMetrics \
       INPUT=~{input_bam} \
       REFERENCE_SEQUENCE=~{ref_fasta} \
@@ -150,7 +150,7 @@ task CollectAggregationMetrics {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
 
   command {
     # These are optionally generated, but need to exist for Cromwell's sake
@@ -160,7 +160,7 @@ task CollectAggregationMetrics {
       ~{output_bam_prefix}.insert_size_metrics \
       ~{output_bam_prefix}.insert_size_histogram.pdf
 
-    java -Xms5000m -jar ${tool_path}/picard.jar \
+    java -Xms5000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectMultipleMetrics \
       INPUT=~{input_bam} \
       REFERENCE_SEQUENCE=~{ref_fasta} \
@@ -212,7 +212,7 @@ task ConvertSequencingArtifactToOxoG {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(size(pre_adapter_detail_metrics, "GiB") + size(bait_bias_detail_metrics, "GiB") + ref_size) + 20
+  Int disk_size = ceil(size(pre_adapter_detail_metrics, "GiB") + size(bait_bias_detail_metrics, "GiB") + ref_size) + 20
 
   Int memory_size = ceil(4 * memory_multiplier)
   Int java_memory_size = (memory_size - 1) * 1000
@@ -220,7 +220,7 @@ task ConvertSequencingArtifactToOxoG {
   command {
     input_base=$(dirname ~{pre_adapter_detail_metrics})/~{base_name}
     java -Xms~{java_memory_size}m \
-      -jar ${tool_path}/picard.jar \
+      -jar /fastdata/01/genomics/tools/picard.jar \
       ConvertSequencingArtifactToOxoG \
       --INPUT_BASE $input_base \
       --OUTPUT_BASE ~{base_name} \
@@ -250,12 +250,12 @@ task CrossCheckFingerprints {
     String cross_check_by
   }
 
-  #Int disk_size = ceil(total_input_size) + 20
+  Int disk_size = ceil(total_input_size) + 20
 
   command <<<
     java -Dsamjdk.buffer_size=131072 \
       -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3000m \
-      -jar ${tool_path}/picard.jar \
+      -jar /fastdata/01/genomics/tools/picard.jar \
       CrosscheckFingerprints \
       OUTPUT=~{metrics_filename} \
       HAPLOTYPE_MAP=~{haplotype_database_file} \
@@ -288,7 +288,7 @@ task CheckFingerprint {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(size(input_bam, "GiB")) + 20
   # Picard has different behavior depending on whether or not the OUTPUT parameter ends with a '.', so we are explicitly
   #   passing in where we want the two metrics files to go to avoid any potential confusion.
   String summary_metrics_location = "~{output_basename}.fingerprinting_summary_metrics"
@@ -297,7 +297,7 @@ task CheckFingerprint {
   command <<<
     java -Dsamjdk.buffer_size=131072 \
       -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10 -Xms3g  \
-      -jar ${tool_path}/picard.jar \
+      -jar /fastdata/01/genomics/tools/picard.jar \
       CheckFingerprint \
       INPUT=~{input_bam} \
       SUMMARY_OUTPUT=~{summary_metrics_location} \
@@ -386,13 +386,13 @@ task ValidateSamFile {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
 
   Int memory_size = ceil(7 * memory_multiplier)
   Int java_memory_size = (memory_size - 1) * 1000
 
   command {
-    java -Xms~{java_memory_size}m -jar ${tool_path}/picard.jar \
+    java -Xms~{java_memory_size}m -jar /fastdata/01/genomics/tools/picard.jar \
       ValidateSamFile \
       INPUT=~{input_bam} \
       OUTPUT=~{report_filename} \
@@ -428,10 +428,10 @@ task CollectWgsMetrics {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + 20
 
   command {
-    java -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectWgsMetrics \
       INPUT=~{input_bam} \
       VALIDATION_STRINGENCY=SILENT \
@@ -469,13 +469,13 @@ task CollectRawWgsMetrics {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
 
   Int memory_size = ceil((if (disk_size < 110) then 5 else 7) * memory_multiplier)
   String java_memory_size = (memory_size - 1) * 1000
 
   command {
-    java -Xms~{java_memory_size}m -jar ${tool_path}/picard.jar \
+    java -Xms~{java_memory_size}m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectRawWgsMetrics \
       INPUT=~{input_bam} \
       VALIDATION_STRINGENCY=SILENT \
@@ -512,7 +512,7 @@ task CollectHsMetrics {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB")
-  #Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
+  Int disk_size = ceil(size(input_bam, "GiB") + ref_size) + additional_disk
   # Try to fit the input bam into memory, within reason.
   Int rounded_bam_size = ceil(size(input_bam, "GiB") + 0.5)
   Int rounded_memory_size = ceil((if (rounded_bam_size > 10) then 10 else rounded_bam_size) * memory_multiplier)
@@ -521,7 +521,7 @@ task CollectHsMetrics {
 
   # There are probably more metrics we want to generate with this tool
   command {
-    java -Xms~{java_memory_size}m -jar ${tool_path}/picard.jar \
+    java -Xms~{java_memory_size}m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectHsMetrics \
       INPUT=~{input_bam} \
       REFERENCE_SEQUENCE=~{ref_fasta} \
@@ -555,10 +555,10 @@ task CalculateReadGroupChecksum {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_bam, "GiB")) + 20
+  Int disk_size = ceil(size(input_bam, "GiB")) + 20
 
   command {
-    java -Xms1000m -jar ${tool_path}/picard.jar \
+    java -Xms1000m -jar /fastdata/01/genomics/tools/picard.jar \
       CalculateReadGroupChecksum \
       INPUT=~{input_bam} \
       OUTPUT=~{read_group_md5_filename}
@@ -591,10 +591,10 @@ task ValidateVCF {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(size(input_vcf, "GiB") + size(dbsnp_vcf, "GiB") + ref_size) + 20
+  Int disk_size = ceil(size(input_vcf, "GiB") + size(dbsnp_vcf, "GiB") + ref_size) + 20
 
   command {
-    ${tool_path}/gatk/gatk --java-options -Xms6000m \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options -Xms6000m \
       ValidateVariants \
       -V ~{input_vcf} \
       -R ~{ref_fasta} \
@@ -626,10 +626,10 @@ task CollectVariantCallingMetrics {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_vcf, "GiB") + size(dbsnp_vcf, "GiB")) + 20
+  Int disk_size = ceil(size(input_vcf, "GiB") + size(dbsnp_vcf, "GiB")) + 20
 
   command {
-    java -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       CollectVariantCallingMetrics \
       INPUT=~{input_vcf} \
       OUTPUT=~{metrics_basename} \

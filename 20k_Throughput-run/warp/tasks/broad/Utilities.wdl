@@ -84,7 +84,7 @@ task ScatterIntervalList {
   command <<<
     set -e
     mkdir out
-    java -Xms1g -jar ${tool_path}/picard.jar \
+    java -Xms1g -jar /fastdata/01/genomics/tools/picard.jar \
       IntervalListTools \
       SCATTER_COUNT=~{scatter_count} \
       SUBDIVISION_MODE=BALANCING_WITHOUT_INTERVAL_SUBDIVISION_WITH_OVERFLOW \
@@ -127,13 +127,13 @@ task ConvertToCram {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB")
-  #Int disk_size = ceil(2 * size(input_bam, "GiB") + ref_size) + 20
+  Int disk_size = ceil(2 * size(input_bam, "GiB") + ref_size) + 20
 
   command <<<
     set -e
     set -o pipefail
 
-    ${tool_path}/samtools/samtools view -C -T ~{ref_fasta} ~{input_bam} | \
+    /fastdata/01/genomics/tools/samtools/samtools view -C -T ~{ref_fasta} ~{input_bam} | \
     tee ~{output_basename}.cram | \
     md5sum | awk '{print $1}' > ~{output_basename}.cram.md5
 
@@ -142,7 +142,7 @@ task ConvertToCram {
     export REF_PATH=:
     export REF_CACHE=./ref/cache/%2s/%2s/%s
 
-    ${tool_path}/samtools/samtools index ~{output_basename}.cram
+    /fastdata/01/genomics/tools/samtools/samtools index ~{output_basename}.cram
   >>>
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"
@@ -171,9 +171,9 @@ task ConvertToBam {
     set -e
     set -o pipefail
 
-    ${tool_path}/samtools/samtools view -b -o ~{output_basename}.bam -T ~{ref_fasta} ~{input_cram}
+    /fastdata/01/genomics/tools/samtools/samtools view -b -o ~{output_basename}.bam -T ~{ref_fasta} ~{input_cram}
 
-    ${tool_path}/samtools/samtools index ~{output_basename}.bam
+    /fastdata/01/genomics/tools/samtools/samtools index ~{output_basename}.bam
   >>>
   runtime {
     #docker: "us.gcr.io/broad-gotc-prod/genomes-in-the-cloud:2.4.7-1603303710"

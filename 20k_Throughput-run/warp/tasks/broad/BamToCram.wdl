@@ -13,7 +13,7 @@ workflow BamToCram {
     File duplication_metrics
     File chimerism_metrics
     String base_file_name
-    Int agg_preemptibles_tries
+    #Int agg_preemptibles_tries
   }
 
 

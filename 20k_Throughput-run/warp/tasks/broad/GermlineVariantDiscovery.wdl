@@ -36,7 +36,7 @@ task HaplotypeCaller_GATK35_GVCF {
   }
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(((size(input_bam, "GiB") + 30) / hc_scatter) + ref_size) + 20
+  Int disk_size = ceil(((size(input_bam, "GiB") + 30) / hc_scatter) + ref_size) + 20
 
   # We use interval_padding 500 below to make sure that the HaplotypeCaller has context on both sides around
   # the interval because the assembly uses them.
@@ -44,7 +44,7 @@ task HaplotypeCaller_GATK35_GVCF {
   # Using PrintReads is a temporary solution until we update HaploypeCaller to use GATK4. Once that is done,
   # HaplotypeCaller can stream the required intervals directly from the cloud.
   command {
-    ${tool_path}/gatk/gatk --java-options "-Xms2g" \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-Xms2g" \
       PrintReads \
       -I ~{input_bam} \
       --interval-padding 500 \
@@ -99,7 +99,7 @@ task HaplotypeCaller_GATK4_VCF {
   String output_file_name = vcf_basename + output_suffix
 
   Float ref_size = size(ref_fasta, "GiB") + size(ref_fasta_index, "GiB") + size(ref_dict, "GiB")
-  #Int disk_size = ceil(((size(input_bam, "GiB") + 30) / hc_scatter) + ref_size) + 20
+  Int disk_size = ceil(((size(input_bam, "GiB") + 30) / hc_scatter) + ref_size) + 20
 
   String bamout_arg = if make_bamout then "-bamout ~{vcf_basename}.bamout.bam" else ""
 
@@ -111,7 +111,7 @@ task HaplotypeCaller_GATK4_VCF {
 
   command <<<
     set -e
-    ${tool_path}/gatk/gatk --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options "-Xms6000m -XX:GCTimeLimit=50 -XX:GCHeapFreeLimit=10" \
       HaplotypeCaller \
       -R ~{ref_fasta} \
       -I ~{input_bam} \
@@ -152,12 +152,12 @@ task MergeVCFs {
     #Int preemptible_tries
   }
 
-  #Int disk_size = ceil(size(input_vcfs, "GiB") * 2.5) + 10
+  Int disk_size = ceil(size(input_vcfs, "GiB") * 2.5) + 10
 
   # Using MergeVcfs instead of GatherVcfs so we can create indices
   # See https://github.com/broadinstitute/picard/issues/789 for relevant GatherVcfs ticket
   command {
-    java -Xms2000m -jar ${tool_path}/picard.jar \
+    java -Xms2000m -jar /fastdata/01/genomics/tools/picard.jar \
       MergeVcfs \
       INPUT=~{sep=' INPUT=' input_vcfs} \
       OUTPUT=~{output_vcf_name}
@@ -184,11 +184,11 @@ task HardFilterVcf {
     #String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
 
-  #Int disk_size = ceil(2 * size(input_vcf, "GiB")) + 20
+  Int disk_size = ceil(2 * size(input_vcf, "GiB")) + 20
   String output_vcf_name = vcf_basename + ".filtered.vcf.gz"
 
   command {
-     ${tool_path}/gatk/gatk --java-options "-Xms3000m" \
+     /fastdata/01/genomics/tools/gatk/gatk --java-options "-Xms3000m" \
       VariantFiltration \
       -V ~{input_vcf} \
       -L ~{interval_list} \
@@ -223,7 +223,7 @@ task CNNScoreVariants {
     #String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
 
-  #Int disk_size = ceil(size(bamout, "GiB") + size(ref_fasta, "GiB") + (size(input_vcf, "GiB") * 2))
+  Int disk_size = ceil(size(bamout, "GiB") + size(ref_fasta, "GiB") + (size(input_vcf, "GiB") * 2))
 
   String base_vcf = basename(input_vcf)
   Boolean is_compressed = basename(base_vcf, "gz") != base_vcf
@@ -236,7 +236,7 @@ task CNNScoreVariants {
   String tensor_type = if defined(bamout) then "read-tensor" else "reference"
 
   command {
-     ${tool_path}/gatk/gatk --java-options -Xmx10g CNNScoreVariants \
+     /fastdata/01/genomics/tools/gatk/gatk --java-options -Xmx10g CNNScoreVariants \
        -V ~{input_vcf} \
        -R ~{ref_fasta} \
        -O ~{output_vcf} \
@@ -280,7 +280,7 @@ task FilterVariantTranches {
     #String gatk_docker = "us.gcr.io/broad-gatk/gatk:4.1.8.0"
   }
 
-  #Int disk_size = ceil(size(hapmap_resource_vcf, "GiB") +
+  Int disk_size = ceil(size(hapmap_resource_vcf, "GiB") +
                         size(omni_resource_vcf, "GiB") +
                         size(one_thousand_genomes_resource_vcf, "GiB") +
                         size(dbsnp_resource_vcf, "GiB") +
@@ -289,7 +289,7 @@ task FilterVariantTranches {
 
   command {
 
-    ${tool_path}/gatk/gatk --java-options -Xmx6g FilterVariantTranches \
+    /fastdata/01/genomics/tools/gatk/gatk --java-options -Xmx6g FilterVariantTranches \
       -V ~{input_vcf} \
       -O ~{vcf_basename}.filtered.vcf.gz \
       ~{sep=" " prefix("--snp-tranche ", snp_tranches)} \
