@@ -59,6 +59,26 @@ echo "Downloading the intervals files"
 #Interval Files
 wget -nc -v -P $DATA_PATH/genomics-public-data/resources/broad/hg38/v0 \
 $GCP_PATH/genomics-public-data/resources/broad/hg38/v0/wgs_calling_regions.hg38.interval_list
+
+#TODO wget https://cloud.google.com/life-sciences/docs/resources/public-datasets/reference-genomes
+#Alternatively  gsutil cp -r gs://genomics-public-data/references/hg38/v0/* .
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.haplotype_database.txt
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.UD
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.mu
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.bed
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/wgs_coverage_regions.hg38.interval_list
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/wgs_calling_regions.hg38.interval_list
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/hg38_wgs_scattered_calling_intervals.txt
+ wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+$GCP_PATH/gcp-public-data--broad-references/hg38/v0/NA12878.hg38.reference.fingerprint.vcf
+
 echo "Done downloading interval files"
 sleep 1
 echo "Downloading 20k Test Data for Single Sample Workflow"

@@ -35,49 +35,32 @@ sed -i 's|gatk --java|${tool_path}/gatk/gatk --java|g' *.wdl
 sed -i 's|use_gatk3_haplotype_caller = true|use_gatk3_haplotype_caller = false|g' *.wdl
 sed -i 's|samtools |${tool_path}/samtools |g' *.wdl
 
-sed -i 's|/usr/gitc/VerifyBamID|${tool_path}/VerifyBamID/bin/VerifyBamID |g' BamProcessing.wdl
 sudo yum install -y R
+sed -i 's|/usr/gitc/VerifyBamID|${tool_path}/VerifyBamID/bin/VerifyBamID |g' BamProcessing.wdl
 
 export num_freemix=`grep -n FREEMIX BamProcessing.wdl | grep print | cut -d ':' -f1`
 sed -i $num_freemix'd'  BamProcessing.wdl
-sed -i $num_freemix'i print(float(row["FREEMIX(alpha)"])/~{contamination_underestimation_factor})'  BamProcessing.wdl
+sed -i $num_freemix'i \          print(float(row["FREEMIX(alpha)"])/~{contamination_underestimation_factor})'  BamProcessing.wdl
 
 sed -i 's|/usr/gitc/bwa|${tool_path}/bwa/bwa|g' *.wdl
 sed -i 's|/usr/gitc/~{bwa_commandline}|${tool_path}/bwa/~{bwa_commandline}|g' *.wdl
 
 # Troubleshooting BWA
 #sed -i '50d' Alignment.wdl      
-#sed -i '50i      BWA_VERSION=$(/fastdata/01/genomics/tools/bwa/bwa 2>&1| \\ ' Alignment.wdl
+#sed -i '50i\      BWA_VERSION=$(/fastdata/01/genomics/tools/bwa/bwa 2>&1| \\ ' Alignment.wdl
 
 sed -i 's|\${tool_path}|'$GENOMICS_PATH'/tools|g' *.wdl
 
 # remove disk_size variable from germline
 sed -i '283,288d' GermlineVariantDiscovery.wdl
 
+# Create import WDLs zip
 zip warp.zip *.wdl
 rm -rf [A-V]*.wdl
 mv WholeGenomeGermlineSingleSample_develop.wdl WholeGenomeGermlineSingleSample.wdl
-sed -i '44i         String tool_path = "'${GENOMICS_PATH}'/tools"'  WholeGenomeGermlineSingleSample.wdl
+sed -i '44i \         String tool_path = "'${GENOMICS_PATH}'/tools"'  WholeGenomeGermlineSingleSample.wdl
 
 #Test pipeline
-
-curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@20k_WholeGenomeGermlineSingleSample.json -F workflowDependencies=@warp.zip
-
-sleep 10 
-
-curl -vXGET localhost:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'
-
-ls -tr /fastdata/01/genomics/cromwell/cromwell-slurm-exec/WholeGenomeGermlineSingleSample/ | tail -n1 | xargs -I {} -n1 grep {} $GENOMICS_PATH/cromwell/cromwell.log
-
-
-echo " Check tail -f $GENOMICS_PATH/cromwell/cromwell.log "
-
-
-
-
-
-
-
-
-
-
+#sudo -u cromwell curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@20k_WholeGenomeGermlineSingleSample.json -F workflowDependencies=@warp.zip
+#sleep 10 
+#curl -vXGET localhost:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'
