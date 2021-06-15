@@ -1,15 +1,15 @@
 
-# clean up
+# Clean up
 rm -rf Whole*
 rm -rf *.wdl
 rm -rf warp.zip
 
-#download WGS release from WARP
+# Download WGS release from WARP
 bash download.sh
 
 # Fix WDL
 unzip WholeGenomeGermlineSingleSample_develop.zip
-grep -n -E 'picard|docker|disk|preemp|VerifyBamID|gatk|gitc|usr' *.wdl > changes.txt
+# grep -n -E 'picard|docker|disk|preemp|VerifyBamID|gatk|gitc|usr' *.wdl > changes.txt
 
 echo "Changing picard"
 sed -i  's|/usr/picard/picard.jar|${tool_path}/picard.jar|g' *.wdl
@@ -47,7 +47,7 @@ sed -i 's|/usr/gitc/~{bwa_commandline}|${tool_path}/bwa/~{bwa_commandline}|g' *.
 
 # Troubleshooting BWA
 #sed -i '50d' Alignment.wdl      
-#sed -i '50i\      BWA_VERSION=$(/fastdata/01/genomics/tools/bwa/bwa 2>&1| \\ ' Alignment.wdl
+#sed -i '50i\      BWA_VERSION=$($GENOMICS_PATH/genomics/tools/bwa/bwa 2>&1| \\ ' Alignment.wdl
 
 sed -i 's|\${tool_path}|'$GENOMICS_PATH'/tools|g' *.wdl
 
