@@ -61,6 +61,6 @@ mv WholeGenomeGermlineSingleSample_develop.wdl WholeGenomeGermlineSingleSample.w
 sed -i '44i \         String tool_path = "'${GENOMICS_PATH}'/tools"'  WholeGenomeGermlineSingleSample.wdl
 
 #Test pipeline
-#sudo -u cromwell curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@20k_WholeGenomeGermlineSingleSample.json -F workflowDependencies=@warp.zip
+#sudo -u cromwell curl -vXPOST http://$CROMWELL_HOST:8000/api/workflows/v1 -F workflowSource=@WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@20k_WholeGenomeGermlineSingleSample.json -F workflowDependencies=@warp.zip
 #sleep 10 
-#curl -vXGET localhost:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'
+#curl -vXGET $CROMWELL_HOST:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'
