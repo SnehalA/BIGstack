@@ -14,30 +14,29 @@
 ###########Editing JSON file#############
 source ./configure
 
-#datapath is the existing path specified in the PairedSingleSampleWf_optimized.inputs.20k.json.Do not edit this path
+#datapath is the existing path specified in the 20k_WholeGenomeGermlineSingleSample.json.Do not edit this path
 datapath=/mnt/lustre/genomics/data
-#toolspath is the existing path specified in the PairedSingleSampleWf_optimized.inputs.20k.json.Do not edit this path
+#toolspath is the existing path specified in the 20k_WholeGenomeGermlineSingleSample.json.Do not edit this path
 toolspath=/mnt/lustre/genomics/tools
 
 mkdir -p  $BASEDIR/JSON
 cd $BASEDIR/JSON
-cp $BASEDIR/PairedSingleSampleWf_optimized.inputs.20k.json $BASEDIR/JSON/PairedSingleSampleWf_optimized.inputs.20k.json
+cp $BASEDIR/20k_WholeGenomeGermlineSingleSample.json $BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample.json
 
 newdatapath=${DATA_PATH}
 newtoolspath=${TOOLS_PATH}
 
 #pointing the correct data path to wdl
-sed -i "s%\/mnt\/lustre\/genomics\/data%$newdatapath%g" $BASEDIR/PairedSingleSampleWf_noqc_nocram_optimized.wdl.20k
+sed -i "s%$datapath%$newdatapath%g" $BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample.json
+sed -i "s%$toolspath%$newtoolspath%g" $BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample.json
 
-sed -i "s%$datapath%$newdatapath%g" $BASEDIR/JSON/PairedSingleSampleWf_optimized.inputs.20k.json
-sed -i "s%$toolspath%$newtoolspath%g" $BASEDIR/JSON/PairedSingleSampleWf_optimized.inputs.20k.json
 limit=$NUM_WORKFLOW
 
 for i in $(seq $limit)
 do
 
-   cp PairedSingleSampleWf_optimized.inputs.20k.json PairedSingleSampleWf_optimized.inputs${i}.20k.json
-   sed -i "s@genomics-public-data@genomics-public-data$i@g" PairedSingleSampleWf_optimized.inputs${i}.20k.json
+   cp 20k_WholeGenomeGermlineSingleSample.json 20k_WholeGenomeGermlineSingleSample_${i}.json
+   sed -i "s@genomics-public-data@genomics-public-data$i@g" 20k_WholeGenomeGermlineSingleSample_${i}.json
 done
 
 ############Editing WDL file##################
