@@ -26,12 +26,7 @@ cp $BASEDIR/20k_WholeGenomeGermlineSingleSample.json $BASEDIR/JSON/20k_WholeGeno
 newdatapath=${DATA_PATH}
 newtoolspath=${TOOLS_PATH}
 
-# Refresh WDL
-bash download.sh
-bash change_wdl.sh
-
 #pointing the correct data path to wdl
-sed -i "s%\/mnt\/lustre\/genomics\/data%$newdatapath%g" $BASEDIR/WholeGenomeGermlineSingleSample.wdl
 sed -i "s%$datapath%$newdatapath%g" $BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample.json
 sed -i "s%$toolspath%$newtoolspath%g" $BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample.json
 
@@ -40,8 +35,8 @@ limit=$NUM_WORKFLOW
 for i in $(seq $limit)
 do
 
-   cp 20k_WholeGenomeGermlineSingleSample.json 20k_WholeGenomeGermlineSingleSample${i}.json
-   sed -i "s@genomics-public-data@genomics-public-data$i@g" 20k_WholeGenomeGermlineSingleSample${i}.json
+   cp 20k_WholeGenomeGermlineSingleSample.json 20k_WholeGenomeGermlineSingleSample_${i}.json
+   sed -i "s@genomics-public-data@genomics-public-data$i@g" 20k_WholeGenomeGermlineSingleSample_${i}.json
 done
 
 ############Editing WDL file##################

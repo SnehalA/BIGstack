@@ -17,7 +17,7 @@ Edit the configure file to set up the various paths to work directories:GENOMICS
 
 ./step01_Configure_20k_Throughput-run.sh
 
-In the WDL file, modify https://github.com/BIGstack/blob/master/20k_Throughput-run/PairedSingleSampleWf_noqc_nocram_optimized.wdl.20k to point to the path where the input files for this test datasets were downloaded to and the tool paths.
+In the WDL file, modify https://github.com/BIGstack/blob/master/20k_Throughput-run/WholeGenomeGermlineSingleSample.wdl to point to the path where the input files for this test datasets were downloaded to and the tool paths.
 
 ## 4.	Download and replicate genomic datasets
 This step will download the dataset and replicate it for the number of workflows specified in the configure script.

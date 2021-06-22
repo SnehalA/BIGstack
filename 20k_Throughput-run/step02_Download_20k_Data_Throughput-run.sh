@@ -60,24 +60,24 @@ echo "Downloading the intervals files"
 wget -nc -v -P $DATA_PATH/genomics-public-data/resources/broad/hg38/v0 \
 $GCP_PATH/genomics-public-data/resources/broad/hg38/v0/wgs_calling_regions.hg38.interval_list
 
-#TODO wget https://cloud.google.com/life-sciences/docs/resources/public-datasets/reference-genomes
 #Alternatively  gsutil cp -r gs://genomics-public-data/references/hg38/v0/* .
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.haplotype_database.txt
+$GCP_PATH/genomics-public-data/references/hg38/v0/wgs_coverage_regions.hg38.interval_list
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.UD
+$GCP_PATH/genomics-public-data/references/hg38/v0/wgs_calling_regions.hg38.interval_list
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.mu
+$GCP_PATH/genomics-public-data/references/hg38/v0/Homo_sapiens_assembly38.haplotype_database.txt
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.contam.bed
+$GCP_PATH/genomics-public-data/references/hg38/v0/Homo_sapiens_assembly38.contam.UD
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/wgs_coverage_regions.hg38.interval_list
+$GCP_PATH/genomics-public-data/references/hg38/v0/Homo_sapiens_assembly38.contam.mu
  wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/wgs_calling_regions.hg38.interval_list
- wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/hg38_wgs_scattered_calling_intervals.txt
- wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
-$GCP_PATH/gcp-public-data--broad-references/hg38/v0/NA12878.hg38.reference.fingerprint.vcf
+$GCP_PATH/genomics-public-data/references/hg38/v0/Homo_sapiens_assembly38.contam.bed
+# Need to find following reference 
+# wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+#$GCP_PATH/genomics-public-data/references/hg38/v0/hg38_wgs_scattered_calling_intervals.txt
+# wget -nc -v -P $DATA_PATH/genomics-public-data/references/broad/hg38/v0/ \
+#$GCP_PATH/genomics-public-data/references/hg38/v0/NA12878.hg38.reference.fingerprint.vcf
 
 echo "Done downloading interval files"
 sleep 1
@@ -92,6 +92,11 @@ wget -nc -v -P $DATA_PATH/genomics-public-data/test-data/dna/wgs/hiseq2500/NA128
 $GCP_PATH/genomics-public-data/test-data/dna/wgs/hiseq2500/NA12878/H06JUADXX130110.1.ATCACGAT.20k_reads.bam
 chmod -R 777 $DATA_PATH/genomics-public-data/test-data/dna/wgs/hiseq2500/NA12878
 echo "Data for tutorial downloaded successfully"
+
+# Refresh WDL 2.3.3
+echo "Downloading WDLfor Single Sample Workflow"
+bash $BASEDIR/change_wdl.sh
+echo "Data for WDL downloaded successfully"
 
 sleep 1
 source $BASEDIR/configure
