@@ -6,6 +6,7 @@ rm -rf warp.zip
 
 #download WGS release from WARP
 bash download.sh
+for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo $tool ${tool_version} && ln -s $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
 
 # Fix WDL
 unzip WholeGenomeGermlineSingleSample_*.zip
