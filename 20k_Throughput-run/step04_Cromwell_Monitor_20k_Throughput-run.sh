@@ -21,7 +21,9 @@ finish=`cat cromwell_diff | grep + | grep status | grep Succeeded | wc -l`
 failed=`cat cromwell_diff | grep + | grep status | grep Failed| wc -l`
 echo running: $count  finished: $finish  failed:  $failed
 
-for status in Running Succeeded Failed; do 
-	curl -sXGET $CROMWELL_HOST:8000/api/workflows/v1/query?status=$status | json_pp | jq .results | jq '.[] | (.id +" | "  + .status + " | " + .start + " | "+ .end +" | " + .name + " | " + .rootWorkflowId )'
-
+echo "-----------------------------"
+echo ' 	          workflow_id         |  status   |	     start           |	  	 end            |  	    name 	| 	parent_workflow_id' 
+for WFID in `cat $BASEDIR/20k_WF_ID/*`; do 
+	echo "-----------------------------"
+	curl -sXGET $CROMWELL_HOST:8000/api/workflows/v1/query?status={Submitted,Running,Aborting,Failed,Succeeded,Aborted} | jq ' .results | [.|= sort_by(.start)] | .[] | .[] | ( .id + " | "  + .status + " | " + .start + " | "+ .end +" | " + .name + " | " + .rootWorkflowId )' | grep $WFID  | tr -s '"'
 done;

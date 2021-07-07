@@ -41,4 +41,3 @@ done
 
 ############Editing WDL file##################
 #user may either edit the tool versions in the WDL file or create symlinks to each tool and add the symlink to the WDL
-
