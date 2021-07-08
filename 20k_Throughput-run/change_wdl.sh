@@ -8,7 +8,6 @@ echo $BASEDIR
 for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -s $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
 
 # Clean up
-rm -rf $BASEDIR/Whole*
 rm -rf $BASEDIR/*.wdl
 rm -rf $BASEDIR/warp.zip
 
@@ -66,6 +65,6 @@ rm -rf $BASEDIR/[A-V]*.wdl
 mv $BASEDIR/WholeGenomeGermlineSingleSample_*.wdl $BASEDIR/WholeGenomeGermlineSingleSample.wdl
 
 # Usage : Test pipeline
-#sudo -u cromwell curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@$BASEDIR/WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@$BASEDIR/20k_WholeGenomeGermlineSingleSample.json -F workflowDependencies=@$BASEDIR/warp.zip
+#sudo -u cromwell curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@$BASEDIR/WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@$BASEDIR/WholeGenomeGermlineSingleSample_20k.json -F workflowDependencies=@$BASEDIR/warp.zip
 #sleep 10 
 #curl -vXGET $CROMWELL_HOST:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'

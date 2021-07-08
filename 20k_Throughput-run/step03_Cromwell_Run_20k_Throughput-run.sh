@@ -14,7 +14,7 @@
 source ./configure
 
 WDL=$BASEDIR/WholeGenomeGermlineSingleSample.wdl
-JSON=$BASEDIR/JSON/20k_WholeGenomeGermlineSingleSample
+JSON=$BASEDIR/JSON/WholeGenomeGermlineSingleSample_20k
 
 limit=$NUM_WORKFLOW
 

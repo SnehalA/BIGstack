@@ -47,7 +47,7 @@ printf "Total Elapsed Time for $NUM_WORKFLOW workflows: $min minutes:%2d seconds
 sum=0
 limit=$NUM_WORKFLOW
 
-for i in `cat 20k_WF_ID/20k_WF_ID_* | cut -d '"' -f2`;
+for i in `cat 20k_WF_ID/20k_WF_ID_*`;
 do
 
 data=`grep "Elapsed time: " $GENOMICS_PATH/cromwell/cromwell-slurm-exec/WholeGenomeGermlineSingleSample/$i/call-*/*/*/call-MarkDuplicates/execution/stderr | cut -d ':' -f 4 | cut -d " " -f 2`
