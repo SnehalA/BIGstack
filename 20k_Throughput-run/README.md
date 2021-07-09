@@ -1,5 +1,5 @@
 # 20k Single Sample Workflow
-To submit, monitor, and receive output from these workflows, follow these steps:
+ To submit, monitor, and receive output from these workflows, follow these steps:
 
 ## Prerequisites
 
@@ -13,7 +13,7 @@ To submit, monitor, and receive output from these workflows, follow these steps:
  | **picard** | 	>= 2.20.0  |
  | **VerifyBamID2**  | commit `c1cba76e979904eb69c31520a0d7f5be63c72253` |
  
-Please refer to [WARP Requirement](https://broadinstitute.github.io/warp/docs/Pipelines/Whole_Genome_Germline_Single_Sample_Pipeline/README#software-version-requirements) for more details.
+   Please refer to [WARP Requirement](https://broadinstitute.github.io/warp/docs/Pipelines/Whole_Genome_Germline_Single_Sample_Pipeline/README#software-version-requirements) for more details.
 
 ## Run Workflow
 
@@ -38,28 +38,30 @@ Please refer to [WARP Requirement](https://broadinstitute.github.io/warp/docs/Pi
 ### 3.   Configure and replicate the JSON files
 
     ./step01_Configure_20k_Throughput-run.sh
-
-In the WDL file, modify https://github.com/BIGstack/blob/master/20k_Throughput-run/WholeGenomeGermlineSingleSample.wdl to point to the path where the input files for this test datasets were downloaded to and the tool paths.
+    
+   The JSON folder is created and contains modified configuration files [WholeGenomeGermlineSingleSample_20k.json](WholeGenomeGermlineSingleSample_20k.json).
 
 ### 4.   Download and replicate genomic datasets
-This step will download the dataset and replicate it for the number of workflows specified in the configure script.
+   This step will download the dataset and replicate it for the number of workflows specified in the configure script.
 
     ./step02_Download_20k_Data_Throughput-run.sh
+    
+  The `warp.zip` and [WholeGenomeGermlineSingleSample.wdl](WholeGenomeGermlineSingleSample.wdl) WDL are modified using [change_wdl.sh](change_wdl.sh) to point to the suggested the tools path and the input files for test datasets.
 
 ### 5.   Run the 20k Throughput workflow
-You can submit the workflow to the Cromwell workflow engine using this script:
+   You can submit the workflow to the Cromwell workflow engine using this script:
 
     ./step03_Cromwell_Run_20k_Throughput-run.sh
 
 After running this script, the HTTP response and workflow submission information are written to `20k_submission_response.txt` in your working directory. Additionally, the workflow identifier for throughput run (for example: `"id": "6ec0643c-1ea1-42bf-b60c-507cd1e3e96c"`), is written to the files under `20k_WF_ID*` folder, which are used by steps 6 and 7.
 
 ### 6.   Monitor the workflow for Workflow status - Failed, Succeeded, Running
-To monitor the 20k Single Sample workflow, execute:
+   To monitor the 20k Single Sample workflow, execute:
 
     ./step04_Cromwell_Monitor_20k_Throughput-run.sh
 
 ### 7.   View 20k Single Sample Workflow Output
-To view the output of this tutorial 20k Single Sample workflow, execute:
+   To view the output of this tutorial 20k Single Sample workflow, execute:
 
     ./step05_Output_20k_Throughput-run.sh
 
