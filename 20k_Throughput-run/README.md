@@ -46,7 +46,7 @@
 
     ./step02_Download_20k_Data_Throughput-run.sh
     
-  The `warp.zip` and [WholeGenomeGermlineSingleSample.wdl](WholeGenomeGermlineSingleSample.wdl) WDL are modified using [change_wdl.sh](change_wdl.sh) to point to the suggested the tools path and the input files for test datasets.
+  The `warp.zip` and [WholeGenomeGermlineSingleSample.wdl](WholeGenomeGermlineSingleSample.wdl) WDL are modified using [change_wdl.sh](change_wdl.sh) to point to the configured tools path and input files for the workflow.
 
 ### 5.   Run the 20k Throughput workflow
    You can submit the workflow to the Cromwell workflow engine using this script:
