@@ -21,7 +21,7 @@
    To clone the repository, run these commands:
 
    ```
-     git clone https://github.com/BIGstack.git
+     git clone https://github.com/Intel-HLS/BIGstack.git
      cd 20k_Throughput-run
    ```
 
