@@ -57,7 +57,7 @@ sed -i '283,288d' $BASEDIR/GermlineVariantDiscovery.wdl
 
 echo "Replace tool_path"
 sed -i 's|\${tool_path}|'$GENOMICS_PATH'/tools|g' $BASEDIR/*.wdl
-sed -i '44i \         String tool_path = "'${GENOMICS_PATH}'/tools"'  $BASEDIR/WholeGenomeGermlineSingleSample_*.wdl
+sed -i '44i \    String tool_path = "'${GENOMICS_PATH}'/tools"'  $BASEDIR/WholeGenomeGermlineSingleSample_*.wdl
 
 echo " Create import WDLs zip"
 zip -j  $BASEDIR/warp.zip $BASEDIR/*.wdl

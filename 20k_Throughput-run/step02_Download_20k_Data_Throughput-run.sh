@@ -93,10 +93,10 @@ $GCP_PATH/genomics-public-data/test-data/dna/wgs/hiseq2500/NA12878/H06JUADXX1301
 chmod -R 777 $DATA_PATH/genomics-public-data/test-data/dna/wgs/hiseq2500/NA12878
 echo "Data for tutorial downloaded successfully"
 
-# Refresh WDL 2.3.3
+# Refresh WARP WDL 2.3.3
 echo "Downloading WDL for Single Sample Workflow "
 bash $BASEDIR/change_wdl.sh
-echo "Data for WDL downloaded successfully"
+echo "WDL downloaded and changed successfully"
 
 sleep 1
 source $BASEDIR/configure
