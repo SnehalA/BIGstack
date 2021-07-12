@@ -5,7 +5,7 @@ echo $BASEDIR
 # sudo yum install -y R
 
 # Create generic symlinks for tools e.g. :
-for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -s $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
+for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -sfn $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
 
 # Clean up
 rm -rf $BASEDIR/*.wdl
@@ -56,6 +56,7 @@ sed -i '283,288d' $BASEDIR/GermlineVariantDiscovery.wdl
 #sed -i $num_freemix'i \          print(float(row["FREEMIX(alpha)"])/~{contamination_underestimation_factor})'  $BASEDIR/BamProcessing.wdl
 
 echo "Replace tool_path"
+source $BASEDIR/configure
 sed -i 's|\${tool_path}|'$GENOMICS_PATH'/tools|g' $BASEDIR/*.wdl
 sed -i '44i \    String tool_path = "'${GENOMICS_PATH}'/tools"'  $BASEDIR/WholeGenomeGermlineSingleSample_*.wdl
 
