@@ -54,6 +54,13 @@
     ./step03_Cromwell_Run_20k_Throughput-run.sh
 
 After running this script, the HTTP response and workflow submission information are written to `20k_submission_response.txt` in your working directory. Additionally, the workflow identifier for throughput run (for example: `"id": "6ec0643c-1ea1-42bf-b60c-507cd1e3e96c"`), is written to the files under `20k_WF_ID*` folder, which are used by steps 6 and 7.
+    
+    ``` 
+    sudo yum install R -y
+    sudo yum install jq -y
+    # Create generic symlinks for tools e.g. :
+    for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -sfn $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
+    ```
 
 ### 6.   Monitor the workflow for Workflow status - Failed, Succeeded, Running
    To monitor the 20k Single Sample workflow, execute:

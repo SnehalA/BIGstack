@@ -3,9 +3,9 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo $BASEDIR
 
 # sudo yum install -y R
-
+# sudo yum install -y jq
 # Create generic symlinks for tools e.g. :
-for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -sfn $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
+# for tool in bwa samtools gatk; do export tool_version=`ls $GENOMICS_PATH/tools | grep ${tool}- | head -n1` && echo ${tool_version} && ln -sfn $GENOMICS_PATH/tools/$tool_version $GENOMICS_PATH/tools/$tool; done;
 
 # Clean up
 rm -rf $BASEDIR/*.wdl
@@ -50,11 +50,6 @@ sed -i 's|bootDiskSizeGb:|#bootDiskSizeGb:|g' $BASEDIR/*.wdl
 # remove disk_size variable from germline
 sed -i '283,288d' $BASEDIR/GermlineVariantDiscovery.wdl
 
-# Verify Output for UnmappedBamToAlignedBam/$WF_ID/call-CheckContamination/execution/NA1278.preBqsr.selfSM
-#export num_freemix=`grep -n FREEMIX $BASEDIR/BamProcessing.wdl | grep print | cut -d ':' -f1`
-#sed -i $num_freemix'd'  $BASEDIR/BamProcessing.wdl
-#sed -i $num_freemix'i \          print(float(row["FREEMIX(alpha)"])/~{contamination_underestimation_factor})'  $BASEDIR/BamProcessing.wdl
-
 echo "Replace tool_path"
 source $BASEDIR/configure
 sed -i 's|\${tool_path}|'$GENOMICS_PATH'/tools|g' $BASEDIR/*.wdl
@@ -65,7 +60,3 @@ zip -j  $BASEDIR/warp.zip $BASEDIR/*.wdl
 rm -rf $BASEDIR/[A-V]*.wdl
 mv $BASEDIR/WholeGenomeGermlineSingleSample_*.wdl $BASEDIR/WholeGenomeGermlineSingleSample.wdl
 
-# Usage : Test pipeline
-#sudo -u cromwell curl -vXPOST http://127.0.0.1:8000/api/workflows/v1 -F workflowSource=@$BASEDIR/WholeGenomeGermlineSingleSample.wdl -F workflowInputs=@$BASEDIR/WholeGenomeGermlineSingleSample_20k.json -F workflowDependencies=@$BASEDIR/warp.zip
-#sleep 10 
-#curl -vXGET $CROMWELL_HOST:8000/api/workflows/v1/query?status=Running | json_pp | jq .results | jq '.[] | (.id +" | " + .status + " | " + .start + " | "+ .submission + "|" + .rootWorkflowId )'
